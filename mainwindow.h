@@ -34,7 +34,7 @@ private:
     void selectFileClicked();
     void loadDataClicked();
     void calculateMetricsClicked();
-    void regionInputEditingFinished();
+    void onRegionChanged(const QString &region);
     void tableItemDoubleClicked(QTableWidgetItem *item);
 
     QString errorText(Status error);

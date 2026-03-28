@@ -19,8 +19,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->loadData, &QPushButton::clicked, this, &MainWindow::loadDataClicked);
     connect(ui->calculateMetrix, &QPushButton::clicked, this, &MainWindow::calculateMetricsClicked);
     connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &MainWindow::tableItemDoubleClicked);
+    connect(ui->regionInput, &QComboBox::currentTextChanged, this, &MainWindow::updateTable);
 
     doOperation(INITIALIZATION, &context, NULL);
+
+    ui->columnInput->clear();
+    ui->columnInput->addItem("Year", COL_YEAR);
+    ui->columnInput->addItem("Natural Population Growth", COL_NPG);
+    ui->columnInput->addItem("Birth Rate", COL_BIRTH_RATE);
+    ui->columnInput->addItem("Death Rate", COL_DEATH_RATE);
+    ui->columnInput->addItem("General Demographic Weight", COL_GDW);
+    ui->columnInput->addItem("Urbanization", COL_URBANIZATION);
 
     ui->tableWidget->setColumnCount(COLUMN_COUNT);
     ui->tableWidget->setHorizontalHeaderLabels({
@@ -94,6 +103,28 @@ void MainWindow::loadDataClicked()
         params.str = cStr;
         doOperation(LOAD_DATA, &context, &params);
         showError();
+
+        if (context.programmStatus == STATUS_OK) {
+            ui->regionInput->blockSignals(true);
+            ui->regionInput->clear();
+            ui->regionInput->addItem("");
+
+            if (context.list != nullptr) {
+                Iterator it = begin(context.list);
+                QString lastRegion = "";
+                while (hasNext(&it)) {
+                    DemographicRecord* record = (DemographicRecord*)get(&it);
+                    QString currentRegion = QString::fromUtf8(record->region);
+                    if (currentRegion != lastRegion) {
+                        ui->regionInput->addItem(currentRegion);
+                        lastRegion = currentRegion;
+                    }
+                    next(&it);
+                }
+            }
+            ui->regionInput->blockSignals(false);
+        }
+
         int successRows = context.stats.totalRows - context.stats.errorRows;
         QMessageBox msgBox(this);
         msgBox.setWindowTitle("TERMINAL NOTIFICATION");
@@ -171,14 +202,10 @@ void MainWindow::updateTable(const QString& region) {
         ui->outputErrorLabel->clear();
 }
 
-void MainWindow::regionInputEditingFinished() {
-    updateTable(ui->regionInput->currentText().trimmed());
-}
-
 void MainWindow::calculateMetricsClicked() {
     std::string str = ui->regionInput->currentText().trimmed().toStdString();
     const char* cStr = str.c_str();
-    Column column = static_cast<Column>(ui->columnInput->currentText().toInt() - 1);
+    Column column = static_cast<Column>(ui->columnInput->currentText().toInt());
 
     if (str.empty())
         ui->outputErrorLabel->setText("Empty region. To calculate metrix need region");
