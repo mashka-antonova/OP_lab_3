@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/image"/>
+    <qresource prefix="/icon">
+        <file>papka.jpg</file>
+        <file>photo.png</file>
+    </qresource>
+</RCC>
