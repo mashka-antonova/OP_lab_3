@@ -48,15 +48,26 @@ int compareDoubles(const void* a, const void* b) {
   return (d1 > d2) - (d1 < d2);
 }
 
-int fillSortedData(LinkedList* sourceList, LinkedList* resList, const char* reg, Column col) {
+int compareGraphPoints(const void* a, const void* b) {
+  const GraphPoint* p1 = (const GraphPoint*)a;
+  const GraphPoint* p2 = (const GraphPoint*)b;
+  return p1->year - p2->year;
+}
+
+int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col) {
   int isCorrect = 1;
   Iterator it = begin(sourceList);
   while(hasNext(&it) && isCorrect) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
     if (strcmp(reg, record->region) == 0) {
         double val = getValueByColumn(record, col);
-        if (!insertSort(resList, &val, compareDoubles))
+        GraphPoint point = {0};
+        point.year = record->year;
+        point.value = val;
+        if (!insertSort(resList, &val, compareDoubles) ||
+            !insertSort(pointsList, &point, compareGraphPoints)) {
           isCorrect = 0;
+        }
     }
     next(&it);
   }
@@ -83,9 +94,16 @@ void findMetrix(LinkedList* list, Metrix* metrix) {
 Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
   Metrix metrix = {0};
   LinkedList* tempList = NULL;
+  metrix.graphPoints = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
+    if (context->metrix.graphPoints != NULL) {
+      disposeList(context->metrix.graphPoints);
+      context->metrix.graphPoints = NULL;
+    }
     tempList = initLinkedList(sizeof(double));
-    if (fillSortedData(context->list, tempList, region, column)) {
+    metrix.graphPoints = initLinkedList(sizeof(GraphPoint));
+    if (tempList != NULL && metrix.graphPoints != NULL &&
+        fillSortedData(context->list, tempList, metrix.graphPoints, region, column)) {
       if (tempList->size > 0) {
         findMetrix(tempList, &metrix);
         context->programmStatus = STATUS_OK;
@@ -95,6 +113,10 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
     } else
         context->programmStatus = ERR_MALLOC_FAILED;
     disposeList(tempList);
+    if (context->programmStatus != STATUS_OK && metrix.graphPoints != NULL) {
+      disposeList(metrix.graphPoints);
+      metrix.graphPoints = NULL;
+    }
   }
   return metrix;
 }

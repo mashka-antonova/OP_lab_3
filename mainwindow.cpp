@@ -41,14 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
     });
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
-    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix));
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), nullptr, context.metrix));
 }
 
 MainWindow::~MainWindow()
 {
-    if (context.list != nullptr)
-        disposeList(context.list);
-
+    doOperation(DISPOSE_CONTEXT, &context, NULL);
     delete ui;
 }
 
@@ -223,13 +221,12 @@ void MainWindow::calculateMetricsClicked() {
             ui->minimum->setText(QString::number(context.metrix.min));
             ui->maximum->setText(QString::number(context.metrix.max));
             ui->mediana->setText(QString::number(context.metrix.mediana));
-            const QVector<GraphPoint> points = collectGraphPoints(ui->regionInput->currentText().trimmed(), column);
-            updateGraph(points);
+            updateGraph(context.metrix.graphPoints);
         } else {
             ui->minimum->clear();
             ui->maximum->clear();
             ui->mediana->clear();
-            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix));
+            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), nullptr, context.metrix));
         }
     }
 }
@@ -239,33 +236,12 @@ void MainWindow::tableItemDoubleClicked(QTableWidgetItem *item) {
         QGuiApplication::clipboard()->setText(item->text());
 }
 
-QVector<GraphPoint> MainWindow::collectGraphPoints(const QString& region, Column column) const {
-    QVector<GraphPoint> points;
-
-    Iterator it = begin(context.list);
-    while (hasNext(&it)) {
-        DemographicRecord* record = (DemographicRecord*)get(&it);
-        QString currentRegion = QString::fromUtf8(record->region);
-        if (currentRegion.compare(region, Qt::CaseInsensitive) == 0) {
-            GraphPoint point;
-            point.year = record->year;
-            point.value = getValueByColumn(record, column);
-            points.push_back(point);
-        }
-        next(&it);
-    }
-    return points;
-}
-
-void MainWindow::updateGraph(const QVector<GraphPoint>& points) {
+void MainWindow::updateGraph(const LinkedList* points) {
     ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix));
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
 
-    QString selectedRegion = ui->regionInput->currentText().trimmed();
-    Column selectedColumn = static_cast<Column>(ui->columnInput->currentData().toInt());
-    QVector<GraphPoint> points = collectGraphPoints(selectedRegion, selectedColumn);
-    updateGraph(points);
+    updateGraph(context.metrix.graphPoints);
 }

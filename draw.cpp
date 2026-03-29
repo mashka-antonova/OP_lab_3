@@ -4,6 +4,10 @@
 #include <QPainterPath>
 #include <cmath>
 
+extern "C" {
+#include "iterator.h"
+}
+
 #define EPS 1e-9
 
 bool isEqual(double left, double right) {
@@ -34,6 +38,26 @@ int mapToY(double value, double minValue, double maxValue, const QRect& drawRect
         yCoord = drawRect.bottom() - static_cast<int>(ratio * drawRect.height());
     }
     return yCoord;
+}
+
+GraphBounds calculateGraphBounds(const LinkedList* points) {
+    GraphBounds bounds;
+    Iterator it = begin((LinkedList*)points);
+    GraphPoint* firstPoint = (GraphPoint*)get(&it);
+    bounds.minYear = firstPoint->year;
+    bounds.maxYear = firstPoint->year;
+    bounds.minValue = firstPoint->value;
+    bounds.maxValue = firstPoint->value;
+
+    while (hasNext(&it)) {
+        GraphPoint* point = (GraphPoint*)get(&it);
+        bounds.minYear = std::min(point->year, bounds.minYear);
+        bounds.maxYear = std::max(point->year, bounds.maxYear);
+        bounds.minValue = std::min(point->value, bounds.minValue);
+        bounds.maxValue = std::max(point->value, bounds.maxValue);
+        next(&it);
+    }
+    return bounds;
 }
 
 void drawNoDataState(QPainter& painter, const QSize& size) {
@@ -112,22 +136,6 @@ void drawMetricDecorations(QPainter& painter, const QRect& rect, const Metrix& m
     }
 }
 
-GraphBounds calculateGraphBounds(const QVector<GraphPoint>& points) {
-    GraphBounds bounds;
-    bounds.minYear = points.first().year;
-    bounds.maxYear = points.first().year;
-    bounds.minValue = points.first().value;
-    bounds.maxValue = points.first().value;
-
-    for (const GraphPoint& point : points) {
-        bounds.minYear = std::min(point.year, bounds.minYear);
-        bounds.maxYear = std::max(point.year, bounds.maxYear);
-        bounds.minValue = std::min(point.value, bounds.minValue);
-        bounds.maxValue = std::max(point.value, bounds.maxValue);
-    }
-    return bounds;
-}
-
 void adjustGraphValueBounds(GraphBounds& bounds) {
     if (isEqual(bounds.minValue, bounds.maxValue)) {
         bounds.minValue -= 1.0;
@@ -157,39 +165,45 @@ void drawAxesAndTitles(QPainter& painter, const QRect& rect, const QSize& size) 
     painter.save();
 }
 
-void drawDataLine(QPainter& painter, const QVector<GraphPoint>& points, const GraphBounds& bounds, const QRect& rect) {
+void drawDataLine(QPainter& painter, const LinkedList* points, const GraphBounds& bounds, const QRect& rect) {
     painter.setBrush(Qt::NoBrush);
     painter.setPen(QPen(QColor("#00FF00"), 2));
     QPainterPath path;
     bool isFirst = true;
-    for (const GraphPoint& point : points) {
-        const int xCoord = mapToX(point.year, bounds.minYear, bounds.maxYear, rect);
-        const int yCoord = mapToY(point.value, bounds.minValue, bounds.maxValue, rect);
+    Iterator it = begin((LinkedList*)points);
+    while (hasNext(&it)) {
+        GraphPoint* point = (GraphPoint*)get(&it);
+        const int xCoord = mapToX(point->year, bounds.minYear, bounds.maxYear, rect);
+        const int yCoord = mapToY(point->value, bounds.minValue, bounds.maxValue, rect);
         if (isFirst) {
             path.moveTo(xCoord, yCoord);
             isFirst = false;
         } else
             path.lineTo(xCoord, yCoord);
+        next(&it);
     }
     painter.drawPath(path);
 }
 
-void drawDataPoints(QPainter& painter, const QVector<GraphPoint>& points, const GraphBounds& bounds, const QRect& rect) {
+void drawDataPoints(QPainter& painter, const LinkedList* points, const GraphBounds& bounds, const QRect& rect) {
     painter.setBrush(QColor("#00FF00"));
-    for (const GraphPoint& point : points) {
-        const int xCoord = mapToX(point.year, bounds.minYear, bounds.maxYear, rect);
-        const int yCoord = mapToY(point.value, bounds.minValue, bounds.maxValue, rect);
+    Iterator it = begin((LinkedList*)points);
+    while (hasNext(&it)) {
+        GraphPoint* point = (GraphPoint*)get(&it);
+        const int xCoord = mapToX(point->year, bounds.minYear, bounds.maxYear, rect);
+        const int yCoord = mapToY(point->value, bounds.minValue, bounds.maxValue, rect);
         painter.drawEllipse(QPoint(xCoord, yCoord), pointRadius, pointRadius);
+        next(&it);
     }
 }
 
-QPixmap buildGraphPixmap(const QSize& size, const QVector<GraphPoint>& points, const Metrix& metrix) {
+QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix) {
     QPixmap pixmap(size);
     pixmap.fill(QColor("#000000"));
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    if (points.isEmpty())
+    if (points == nullptr || points->size == 0)
         drawNoDataState(painter, size);
     else {
         GraphBounds bounds = calculateGraphBounds(points);

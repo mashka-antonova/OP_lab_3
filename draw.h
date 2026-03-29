@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QSize>
 #include <QString>
-#include <QVector>
 
 extern "C" {
 #include "metrix.h"
@@ -20,17 +19,12 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    int year;
-    double value;
-} GraphPoint;
-
-typedef struct {
     int minYear;
     int maxYear;
     double minValue;
     double maxValue;
 } GraphBounds;
 
-QPixmap buildGraphPixmap(const QSize& size, const QVector<GraphPoint>& points, const Metrix& metrix);
+QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix);
 
 #endif // DRAW_H

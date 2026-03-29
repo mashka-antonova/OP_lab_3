@@ -12,6 +12,7 @@ void initContext(AppContext* context) {
     context->metrix.min = 0;
     context->metrix.max = 0;
     context->metrix.mediana = 0;
+    context->metrix.graphPoints = NULL;
   }
 }
 
@@ -40,4 +41,14 @@ void runLoadDataTask(AppContext* context, const char* fileName) {
 void runCalculateMetricsTask(AppContext* context, const char* region, Column column) {
   context->programmStatus = STATUS_OK;
   context->metrix = calculateMetrix(context, region, column);
+}
+
+void disposeContext(AppContext* context) {
+  if (context != NULL) {
+    if (context->list != NULL)
+      disposeList(context->list);
+    if (context->metrix.graphPoints != NULL)
+      disposeList(context->metrix.graphPoints);
+    initContext(context);
+  }
 }

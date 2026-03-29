@@ -41,8 +41,7 @@ private:
     QString errorText(Status error);
     void showError();
     void updateTable(const QString& region);
-    QVector<GraphPoint> collectGraphPoints(const QString& region, Column column) const;
-    void updateGraph(const QVector<GraphPoint>& points);
+    void updateGraph(const LinkedList* points);
     void resizeEvent(QResizeEvent* event);
 };
 

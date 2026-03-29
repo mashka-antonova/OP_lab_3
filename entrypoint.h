@@ -8,6 +8,7 @@ typedef enum {
     LOAD_DATA,
     CALCULATE_METRICS,
     INITIALIZATION,
+    DISPOSE_CONTEXT,
 } Operation;
 
 typedef struct {
