@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
-    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix, "Value"));
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix));
 }
 
 MainWindow::~MainWindow()
@@ -223,12 +223,12 @@ void MainWindow::calculateMetricsClicked() {
             ui->maximum->setText(QString::number(context.metrix.max));
             ui->mediana->setText(QString::number(context.metrix.mediana));
             const QVector<GraphPoint> points = collectGraphPoints(ui->regionInput->currentText().trimmed(), column);
-            updateGraph(points, column);
+            updateGraph(points);
         } else {
             ui->minimum->clear();
             ui->maximum->clear();
             ui->mediana->clear();
-            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix, "Value"));
+            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix));
         }
     }
 }
@@ -256,29 +256,6 @@ QVector<GraphPoint> MainWindow::collectGraphPoints(const QString& region, Column
     return points;
 }
 
-void MainWindow::updateGraph(const QVector<GraphPoint>& points, Column column) {
-    QString yAxisTitle = "Value";
-    switch (column) {
-    case COL_NPG:
-        yAxisTitle = "Natural Population Growth";
-        break;
-    case COL_BIRTH_RATE:
-        yAxisTitle = "Birth Rate";
-        break;
-    case COL_DEATH_RATE:
-        yAxisTitle = "Death Rate";
-        break;
-    case COL_GDW:
-        yAxisTitle = "General Demographic Weight";
-        break;
-    case COL_URBANIZATION:
-        yAxisTitle = "Urbanization";
-        break;
-    case COL_YEAR:
-        yAxisTitle = "Year";
-        break;
-    default:
-        break;
-    }
-    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix, yAxisTitle));
+void MainWindow::updateGraph(const QVector<GraphPoint>& points) {
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix));
 }

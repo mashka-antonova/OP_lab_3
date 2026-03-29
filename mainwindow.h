@@ -42,7 +42,7 @@ private:
     void showError();
     void updateTable(const QString& region);
     QVector<GraphPoint> collectGraphPoints(const QString& region, Column column) const;
-    void updateGraph(const QVector<GraphPoint>& points, Column column);
+    void updateGraph(const QVector<GraphPoint>& points);
 
 };
 

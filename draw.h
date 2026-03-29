@@ -24,6 +24,13 @@ typedef struct {
     double value;
 } GraphPoint;
 
-QPixmap buildGraphPixmap(const QSize& size, const QVector<GraphPoint>& points, const Metrix& metrix, const QString& yAxisLabel);
+typedef struct {
+    int minYear;
+    int maxYear;
+    double minValue;
+    double maxValue;
+} GraphBounds;
+
+QPixmap buildGraphPixmap(const QSize& size, const QVector<GraphPoint>& points, const Metrix& metrix);
 
 #endif // DRAW_H
