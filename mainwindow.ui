@@ -248,7 +248,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
     <item row="3" column="2">
      <widget class="QLabel" name="outputErrorLabel">
       <property name="text">
-       <string>TextLabel</string>
+       <string/>
       </property>
      </widget>
     </item>
