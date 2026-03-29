@@ -59,14 +59,16 @@ void drawMetricLine(QPainter& painter,
 
 void drawXAxisTicks(QPainter& painter, const QRect& rect, int minYear, int maxYear) {
     const int yearRange = std::max(1, maxYear - minYear);
-    int yearTickStep = 1;
-    if (yearRange > 12)
-        yearTickStep = static_cast<int>(std::ceil(static_cast<double>(yearRange) / 12.0));
+    const int maxTicks = 18;
+    int yearTickStep = std::max(1, static_cast<int>(std::ceil(static_cast<double>(yearRange) / maxTicks)));
 
     painter.setPen(QPen(QColor("#00AA00"), 1, Qt::DashLine));
+    int lastTickYear = minYear;
     for (int year = minYear; year <= maxYear; year += yearTickStep) {
-        if (year != minYear && year + yearTickStep >= maxYear)
+        if (year == maxYear - 1)
             continue;
+
+        lastTickYear = year;
 
         const int xCoord = mapToX(year, minYear, maxYear, rect);
         painter.drawLine(xCoord, rect.bottom(), xCoord, rect.top());
@@ -75,7 +77,7 @@ void drawXAxisTicks(QPainter& painter, const QRect& rect, int minYear, int maxYe
         painter.setPen(QPen(QColor("#00AA00"), 1, Qt::DashLine));
     }
 
-    if ((maxYear - minYear) % yearTickStep != 0) {
+    if (lastTickYear != maxYear) {
         const int xCoord = mapToX(maxYear, minYear, maxYear, rect);
         painter.drawLine(xCoord, rect.bottom(), xCoord, rect.top());
         painter.setPen(QColor("#00FF00"));

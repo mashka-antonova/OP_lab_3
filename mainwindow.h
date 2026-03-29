@@ -43,7 +43,7 @@ private:
     void updateTable(const QString& region);
     QVector<GraphPoint> collectGraphPoints(const QString& region, Column column) const;
     void updateGraph(const QVector<GraphPoint>& points);
-
+    void resizeEvent(QResizeEvent* event);
 };
 
 #endif // MAINWINDOW_H

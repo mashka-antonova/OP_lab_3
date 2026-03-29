@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QIcon>
 #include <QClipboard>
+#include <QResizeEvent>
 
 #define defaultGraphWidth 480
 #define defaultGraphHeight 320
@@ -258,4 +259,13 @@ QVector<GraphPoint> MainWindow::collectGraphPoints(const QString& region, Column
 
 void MainWindow::updateGraph(const QVector<GraphPoint>& points) {
     ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix));
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event) {
+    QMainWindow::resizeEvent(event);
+
+    QString selectedRegion = ui->regionInput->currentText().trimmed();
+    Column selectedColumn = static_cast<Column>(ui->columnInput->currentData().toInt());
+    QVector<GraphPoint> points = collectGraphPoints(selectedRegion, selectedColumn);
+    updateGraph(points);
 }
