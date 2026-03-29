@@ -6,6 +6,8 @@
 #include <QIcon>
 #include <QClipboard>
 
+#define defaultGraphWidth 480
+#define defaultGraphHeight 320
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
         "Death Rate", "Dem.Weight", "Urbanization"
     });
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix, "Value"));
 }
 
 MainWindow::~MainWindow()
@@ -205,7 +209,7 @@ void MainWindow::updateTable(const QString& region) {
 void MainWindow::calculateMetricsClicked() {
     std::string str = ui->regionInput->currentText().trimmed().toStdString();
     const char* cStr = str.c_str();
-    Column column = static_cast<Column>(ui->columnInput->currentText().toInt());
+    Column column = static_cast<Column>(ui->columnInput->currentData().toInt());
 
     if (str.empty())
         ui->outputErrorLabel->setText("Empty region. To calculate metrix need region");
@@ -218,10 +222,13 @@ void MainWindow::calculateMetricsClicked() {
             ui->minimum->setText(QString::number(context.metrix.min));
             ui->maximum->setText(QString::number(context.metrix.max));
             ui->mediana->setText(QString::number(context.metrix.mediana));
+            const QVector<GraphPoint> points = collectGraphPoints(ui->regionInput->currentText().trimmed(), column);
+            updateGraph(points, column);
         } else {
             ui->minimum->clear();
             ui->maximum->clear();
             ui->mediana->clear();
+            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), {}, context.metrix, "Value"));
         }
     }
 }
@@ -229,4 +236,49 @@ void MainWindow::calculateMetricsClicked() {
 void MainWindow::tableItemDoubleClicked(QTableWidgetItem *item) {
     if (item && item->column() == COL_REGION)
         QGuiApplication::clipboard()->setText(item->text());
+}
+
+QVector<GraphPoint> MainWindow::collectGraphPoints(const QString& region, Column column) const {
+    QVector<GraphPoint> points;
+
+    Iterator it = begin(context.list);
+    while (hasNext(&it)) {
+        DemographicRecord* record = (DemographicRecord*)get(&it);
+        QString currentRegion = QString::fromUtf8(record->region);
+        if (currentRegion.compare(region, Qt::CaseInsensitive) == 0) {
+            GraphPoint point;
+            point.year = record->year;
+            point.value = getValueByColumn(record, column);
+            points.push_back(point);
+        }
+        next(&it);
+    }
+    return points;
+}
+
+void MainWindow::updateGraph(const QVector<GraphPoint>& points, Column column) {
+    QString yAxisTitle = "Value";
+    switch (column) {
+    case COL_NPG:
+        yAxisTitle = "Natural Population Growth";
+        break;
+    case COL_BIRTH_RATE:
+        yAxisTitle = "Birth Rate";
+        break;
+    case COL_DEATH_RATE:
+        yAxisTitle = "Death Rate";
+        break;
+    case COL_GDW:
+        yAxisTitle = "General Demographic Weight";
+        break;
+    case COL_URBANIZATION:
+        yAxisTitle = "Urbanization";
+        break;
+    case COL_YEAR:
+        yAxisTitle = "Year";
+        break;
+    default:
+        break;
+    }
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix, yAxisTitle));
 }

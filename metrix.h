@@ -11,6 +11,7 @@ typedef struct {
     double mediana;
 } Metrix;
 
+double getValueByColumn(DemographicRecord* record, Column column);
 Metrix calculateMetrix(AppContext* context, const char* region, Column columnIndex);
 
 #endif // METRIX_H

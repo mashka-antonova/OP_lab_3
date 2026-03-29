@@ -83,145 +83,7 @@ QTableWidget QTableCornerButton::section {
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QToolButton" name="selectFile">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="source.qrc">
-          <normaloff>:/icon/papka.jpg</normaloff>:/icon/papka.jpg</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="loadData">
-        <property name="styleSheet">
-         <string notr="true">font: 9pt &quot;Courier New&quot;;</string>
-        </property>
-        <property name="text">
-         <string>Load Data</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="filePath">
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="2" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="styleSheet">
-         <string notr="true">color: #00FF00;
-background-color: #000000;
-border: 1px solid #00FF00;
-font-family: &quot;Courier New&quot;, monospace;
-border-style: dashed</string>
-        </property>
-        <property name="text">
-         <string>Select region:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="regionInput"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="styleSheet">
-         <string notr="true">color: #00FF00;
-background-color: #000000;
-border: 1px solid #00FF00;
-font-family: &quot;Courier New&quot;, monospace;
-border-style: dashed</string>
-        </property>
-        <property name="text">
-         <string>Select a column for calculating metrics:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="columnInput"/>
-      </item>
-     </layout>
-    </item>
-    <item row="1" column="0">
-     <widget class="QTableWidget" name="tableWidget">
-      <property name="styleSheet">
-       <string notr="true">/* 1. Общая область вертикальной полосы прокрутки */
-QScrollBar:vertical {
-    background-color: #000000; /* Фон дорожки */
-    width: 16px;
-    margin: 0px 0px 0px 0px;
-    border: 1px solid #00FF00; /* Зеленая рамка всей полосы */
-}
-
-/* 2. Сам ползунок (бегунок) */
-QScrollBar::handle:vertical {
-    background-color: #00FF00; /* Ярко-зеленый ползунок */
-    min-height: 20px;
-    margin: 2px; /* Небольшой отступ внутри рамки */
-}
-
-/* 3. Нижняя и верхняя кнопки (стрелочки) — полностью их убираем */
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    background: none;
-    height: 0px;
-    subcontrol-origin: margin;
-}
-
-/* 4. Область дорожки выше и ниже ползунка (важно!) */
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-    background: #000000; /* Чтобы область под ползунком была черной, а не серой */
-}
-
-/* 5. То же самое для горизонтальной полосы (на всякий случай) */
-QScrollBar:horizontal {
-    background-color: #000000;
-    height: 16px;
-    border: 1px solid #00FF00;
-}
-QScrollBar::handle:horizontal {
-    background-color: #00FF00;
-    min-width: 20px;
-    margin: 2px;
-}
-QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal,
-QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-    background: none;
-    width: 0px;
-}</string>
-      </property>
-      <property name="editTriggers">
-       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
-      </property>
-      <property name="updateThreshold">
-       <number>200</number>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLabel" name="outputErrorLabel">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
+    <item row="2" column="2">
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QPushButton" name="calculateMetrix">
@@ -328,12 +190,166 @@ border-style: dashed</string>
       </item>
      </layout>
     </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QLabel" name="label_6">
+    <item row="1" column="0">
+     <widget class="QTableWidget" name="tableWidget">
+      <property name="styleSheet">
+       <string notr="true">/* 1. Общая область вертикальной полосы прокрутки */
+QScrollBar:vertical {
+    background-color: #000000; /* Фон дорожки */
+    width: 16px;
+    margin: 0px 0px 0px 0px;
+    border: 1px solid #00FF00; /* Зеленая рамка всей полосы */
+}
+
+/* 2. Сам ползунок (бегунок) */
+QScrollBar::handle:vertical {
+    background-color: #00FF00; /* Ярко-зеленый ползунок */
+    min-height: 20px;
+    margin: 2px; /* Небольшой отступ внутри рамки */
+}
+
+/* 3. Нижняя и верхняя кнопки (стрелочки) — полностью их убираем */
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+    subcontrol-origin: margin;
+}
+
+/* 4. Область дорожки выше и ниже ползунка (важно!) */
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: #000000; /* Чтобы область под ползунком была черной, а не серой */
+}
+
+/* 5. То же самое для горизонтальной полосы (на всякий случай) */
+QScrollBar:horizontal {
+    background-color: #000000;
+    height: 16px;
+    border: 1px solid #00FF00;
+}
+QScrollBar::handle:horizontal {
+    background-color: #00FF00;
+    min-width: 20px;
+    margin: 2px;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal,
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+    width: 0px;
+}</string>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+      </property>
+      <property name="updateThreshold">
+       <number>200</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLabel" name="outputErrorLabel">
       <property name="text">
        <string>TextLabel</string>
       </property>
      </widget>
+    </item>
+    <item row="1" column="2" colspan="2">
+     <widget class="QLabel" name="graph">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QToolButton" name="selectFile">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset resource="source.qrc">
+          <normaloff>:/icon/papka.jpg</normaloff>:/icon/papka.jpg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="loadData">
+        <property name="styleSheet">
+         <string notr="true">font: 9pt &quot;Courier New&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Load Data</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="filePath">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">color: #00FF00;
+background-color: #000000;
+border: 1px solid #00FF00;
+font-family: &quot;Courier New&quot;, monospace;
+border-style: dashed</string>
+        </property>
+        <property name="text">
+         <string>Select region:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="regionInput"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="styleSheet">
+         <string notr="true">color: #00FF00;
+background-color: #000000;
+border: 1px solid #00FF00;
+font-family: &quot;Courier New&quot;, monospace;
+border-style: dashed</string>
+        </property>
+        <property name="text">
+         <string>Select a column for calculating metrics:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="columnInput"/>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="1">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Policy::Maximum</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

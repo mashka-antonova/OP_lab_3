@@ -10,6 +10,7 @@ extern "C" {
 
 #include <QMainWindow>
 #include <QTableWidget>
+#include "draw.h"
 
 #define COLUMN_COUNT 7
 
@@ -40,6 +41,8 @@ private:
     QString errorText(Status error);
     void showError();
     void updateTable(const QString& region);
+    QVector<GraphPoint> collectGraphPoints(const QString& region, Column column) const;
+    void updateGraph(const QVector<GraphPoint>& points, Column column);
 
 };
 
