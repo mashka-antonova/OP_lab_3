@@ -7,9 +7,9 @@
 typedef struct AppContext AppContext;
 
 typedef struct {
-    int year;
-    double value;
-} GraphPoint; // //
+    double x;
+    double y;
+} GraphPoint;
 
 typedef struct {
     double min;

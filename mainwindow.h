@@ -12,8 +12,6 @@ extern "C" {
 #include <QTableWidget>
 #include "draw.h"
 
-#define COLUMN_COUNT 7
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;

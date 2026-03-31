@@ -11,6 +11,7 @@ typedef enum {
     COL_DEATH_RATE,
     COL_GDW,
     COL_URBANIZATION,
+    COL_COUNT
 } Column;
 
 typedef struct {

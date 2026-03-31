@@ -3,8 +3,6 @@
 
 #include "demography.h"
 
-#define FIELDS_COUNT 7 //
-
 int validateHeader(const char* headerLine);
 int parseDemographyLine(char* line, DemographicRecord* record);
 

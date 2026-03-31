@@ -14,7 +14,7 @@ extern "C" {
 struct MetricMarker {
     double value;
     QColor color;
-    QString label; //
+    QString str; //
 };
 
 bool isEqual(double a, double b) {
@@ -51,17 +51,17 @@ GraphBounds calculateGraphBounds(const LinkedList* points) {
     GraphBounds bounds;
     Iterator it = begin((LinkedList*)points);
     GraphPoint* firstPoint = (GraphPoint*)get(&it);
-    bounds.minYear = firstPoint->year;
-    bounds.maxYear = firstPoint->year;
-    bounds.minValue = firstPoint->value;
-    bounds.maxValue = firstPoint->value;
+    bounds.minYear = firstPoint->x;
+    bounds.maxYear = firstPoint->x;
+    bounds.minValue = firstPoint->y;
+    bounds.maxValue = firstPoint->y;
 
     while (hasNext(&it)) {
         GraphPoint* point = (GraphPoint*)get(&it);
-        bounds.minYear = std::min(point->year, bounds.minYear);
-        bounds.maxYear = std::max(point->year, bounds.maxYear);
-        bounds.minValue = std::min(point->value, bounds.minValue);
-        bounds.maxValue = std::max(point->value, bounds.maxValue);
+        bounds.minYear = std::min(point->x, bounds.minYear);
+        bounds.maxYear = std::max(point->x, bounds.maxYear);
+        bounds.minValue = std::min(point->y, bounds.minValue);
+        bounds.maxValue = std::max(point->y, bounds.maxValue);
         next(&it);
     }
     return bounds;
@@ -134,7 +134,7 @@ void drawMetricDecorations(QPainter& painter, const QRect& rect, const Metrix& m
         painter.setPen(QPen(metricPoint.color, thickLineWidth));
         painter.setBrush(metricPoint.color);
         painter.drawEllipse(QPoint(rect.left(), yCoord), pointRadius + metricPointExtraRadius, pointRadius + metricPointExtraRadius);
-        painter.drawText(rect.left() - metricLabelXOffset, yCoord - metricLabelYOffset, metricPoint.label);
+        painter.drawText(rect.left() - metricLabelXOffset, yCoord - metricLabelYOffset, metricPoint.str);
     }
 }
 
@@ -172,8 +172,8 @@ void drawDataLine(QPainter& painter, const LinkedList* points, const GraphBounds
     Iterator it = begin((LinkedList*)points);
     while (hasNext(&it)) {
         GraphPoint* point = (GraphPoint*)get(&it);
-        int xCoord = mapToX(point->year, bounds.minYear, bounds.maxYear, rect);
-        int yCoord = mapToY(point->value, bounds.minValue, bounds.maxValue, rect);
+        int xCoord = mapToX(point->x, bounds.minYear, bounds.maxYear, rect);
+        int yCoord = mapToY(point->y, bounds.minValue, bounds.maxValue, rect);
         if (isFirst) {
             path.moveTo(xCoord, yCoord);
             isFirst = false;
@@ -189,8 +189,8 @@ void drawDataPoints(QPainter& painter, const LinkedList* points, const GraphBoun
     Iterator it = begin((LinkedList*)points);
     while (hasNext(&it)) {
         GraphPoint* point = (GraphPoint*)get(&it);
-        int xCoord = mapToX(point->year, bounds.minYear, bounds.maxYear, rect);
-        int yCoord = mapToY(point->value, bounds.minValue, bounds.maxValue, rect);
+        int xCoord = mapToX(point->x, bounds.minYear, bounds.maxYear, rect);
+        int yCoord = mapToY(point->y, bounds.minValue, bounds.maxValue, rect);
         painter.drawEllipse(QPoint(xCoord, yCoord), pointRadius, pointRadius);
         next(&it);
     }

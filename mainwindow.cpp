@@ -34,14 +34,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->columnInput->addItem("General Demographic Weight", COL_GDW);
     ui->columnInput->addItem("Urbanization", COL_URBANIZATION);
 
-    ui->tableWidget->setColumnCount(COLUMN_COUNT);
-    ui->tableWidget->setHorizontalHeaderLabels({ //
+    ui->tableWidget->setColumnCount(COL_COUNT);
+    ui->tableWidget->setHorizontalHeaderLabels({
         "Year", "Region", "Nat.Growth", "Birth Rate",
         "Death Rate", "Dem.Weight", "Urbanization"
     });
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
-    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), nullptr, context.metrix)); //
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), context.metrix.graphPoints, context.metrix));
 }
 
 MainWindow::~MainWindow()
@@ -87,7 +87,7 @@ void MainWindow::showError(){
 
 void MainWindow::selectFileClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose CSV file", "", "CSV Files (*.csv);;All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose CSV file", "", "CSV Files (*.csv);;All Files (*)"); //
     if (!fileName.isEmpty())
         ui->filePath->setText(fileName);
     else
@@ -242,6 +242,5 @@ void MainWindow::updateGraph(const LinkedList* points) {
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
-
     updateGraph(context.metrix.graphPoints);
 }

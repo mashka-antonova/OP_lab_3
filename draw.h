@@ -32,8 +32,8 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    int minYear;
-    int maxYear;
+    double minYear;
+    double maxYear;
     double minValue;
     double maxValue;
 } GraphBounds;

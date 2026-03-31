@@ -51,7 +51,7 @@ int compareDoubles(const void* a, const void* b) {
 int compareGraphPoints(const void* a, const void* b) {
   const GraphPoint* p1 = (const GraphPoint*)a;
   const GraphPoint* p2 = (const GraphPoint*)b;
-  return p1->year - p2->year;
+  return p1->x - p2->x;
 }
 
 int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col) {
@@ -59,11 +59,11 @@ int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* poin
   Iterator it = begin(sourceList);
   while(hasNext(&it) && isCorrect) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
-    if (strcmp(reg, record->region) == 0) { //
+    if (!strcmp(reg, record->region)) {
         double val = getValueByColumn(record, col);
-        GraphPoint point = {0}; // // with debugger
-        point.year = record->year;
-        point.value = val;
+        GraphPoint point;
+        point.x = record->year;
+        point.y = val;
         if (!insertSort(resList, &val, compareDoubles) ||
             !insertSort(pointsList, &point, compareGraphPoints)) {
           isCorrect = 0;
@@ -80,14 +80,16 @@ void findMetrix(LinkedList* list, Metrix* metrix) {
 
   int mid = list->size / 2;
   Iterator it = begin(list);
-  for (int i = 0; i < mid; i++)
+  double prevVal = *(double*)get(&it);
+  for (int i = 0; i < mid; i++) {
+    prevVal = *(double*)get(&it);
     next(&it);
+  }
   if (list->size % 2 != 0)
     metrix->mediana = *(double*)get(&it);
   else {
     double valRight = *(double*)get(&it);
-    double valLeft = *(double*)it.current->prev->data; //
-    metrix->mediana = (valLeft + valRight) / 2.0;
+    metrix->mediana = (prevVal + valRight) / 2.0;
   }
 }
 
