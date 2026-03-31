@@ -2,6 +2,8 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <cmath>
+#include <QList>
+#include <QPoint>
 
 extern "C" {
 #include "iterator.h"
@@ -164,36 +166,40 @@ void drawAxesAndTitles(QPainter& painter, const QRect& rect, const QSize& size) 
     painter.save();
 }
 
-void drawDataLine(QPainter& painter, const LinkedList* points, const GraphBounds& bounds, const QRect& rect) {
+QList<QPoint> buildDrawPoints(const LinkedList* points, const GraphBounds& bounds, const QRect& rect) {
+    QList<QPoint> drawPoints;
+    if (points != nullptr) {
+        drawPoints.reserve(points->size);
+        Iterator it = begin((LinkedList*)points);
+        while (hasNext(&it)) {
+            GraphPoint* point = (GraphPoint*)get(&it);
+            int x = mapToX(point->x, bounds.minYear, bounds.maxYear, rect);
+            int y = mapToY(point->y, bounds.minValue, bounds.maxValue, rect);
+            drawPoints.append(QPoint(x, y));
+            next(&it);
+        }
+    }
+    return drawPoints;
+}
+
+void drawDataLine(QPainter& painter, const QList<QPoint>& drawPoints) {
+    if (drawPoints.isEmpty())
+        return;
+
     painter.setBrush(Qt::NoBrush);
     painter.setPen(QPen(QColor("#00FF00"), thickLineWidth));
     QPainterPath path;
-    bool isFirst = true;
-    Iterator it = begin((LinkedList*)points);
-    while (hasNext(&it)) {
-        GraphPoint* point = (GraphPoint*)get(&it);
-        int xCoord = mapToX(point->x, bounds.minYear, bounds.maxYear, rect);
-        int yCoord = mapToY(point->y, bounds.minValue, bounds.maxValue, rect);
-        if (isFirst) {
-            path.moveTo(xCoord, yCoord);
-            isFirst = false;
-        } else
-            path.lineTo(xCoord, yCoord);
-        next(&it);
-    }
+    path.moveTo(drawPoints.first());
+    for (int i = 1; i < drawPoints.size(); ++i)
+        path.lineTo(drawPoints[i]);
+
     painter.drawPath(path);
 }
 
-void drawDataPoints(QPainter& painter, const LinkedList* points, const GraphBounds& bounds, const QRect& rect) {
+void drawDataPoints(QPainter& painter, const QList<QPoint>& drawPoints) {
     painter.setBrush(QColor("#00FF00"));
-    Iterator it = begin((LinkedList*)points);
-    while (hasNext(&it)) {
-        GraphPoint* point = (GraphPoint*)get(&it);
-        int xCoord = mapToX(point->x, bounds.minYear, bounds.maxYear, rect);
-        int yCoord = mapToY(point->y, bounds.minValue, bounds.maxValue, rect);
-        painter.drawEllipse(QPoint(xCoord, yCoord), pointRadius, pointRadius);
-        next(&it);
-    }
+    for (const QPoint& drawPoint : drawPoints)
+        painter.drawEllipse(drawPoint, pointRadius, pointRadius);
 }
 
 QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix) {
@@ -212,8 +218,9 @@ QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metr
         drawAxesAndTitles(painter, rect, size);
         drawXAxisTicks(painter, rect, bounds.minYear, bounds.maxYear);
         drawMetricDecorations(painter, rect, metrix, bounds.minValue, bounds.maxValue);
-        drawDataLine(painter, points, bounds, rect);
-        drawDataPoints(painter, points, bounds, rect);
+        const QList<QPoint> drawPoints = buildDrawPoints(points, bounds, rect);
+        drawDataLine(painter, drawPoints);
+        drawDataPoints(painter, drawPoints);
     }
     return pixmap;
 }

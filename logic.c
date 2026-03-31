@@ -12,7 +12,7 @@ void initContext(AppContext* context) {
     context->metrix.min = 0;
     context->metrix.max = 0;
     context->metrix.mediana = 0;
-    context->metrix.graphPoints = NULL;
+    context->graphPoints = NULL;
   }
 }
 
@@ -47,8 +47,8 @@ void disposeContext(AppContext* context) {
   if (context != NULL) {
     if (context->list != NULL)
       disposeList(context->list);
-    if (context->metrix.graphPoints != NULL)
-      disposeList(context->metrix.graphPoints);
+    if (context->graphPoints != NULL)
+      disposeList(context->graphPoints);
     initContext(context);
   }
 }

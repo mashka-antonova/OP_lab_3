@@ -24,6 +24,7 @@ typedef struct AppContext {
     FileStats stats;
     Status programmStatus;
     Metrix metrix;
+    LinkedList* graphPoints;
 } AppContext;
 
 #endif // APPCONTEXT_H

@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
-    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), context.metrix.graphPoints, context.metrix));
+    ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), context.graphPoints, context.metrix));
 }
 
 MainWindow::~MainWindow()
@@ -221,12 +221,12 @@ void MainWindow::calculateMetricsClicked() {
             ui->minimum->setText(QString::number(context.metrix.min));
             ui->maximum->setText(QString::number(context.metrix.max));
             ui->mediana->setText(QString::number(context.metrix.mediana));
-            updateGraph(context.metrix.graphPoints);
+            updateGraph(context.graphPoints);
         } else {
             ui->minimum->clear();
             ui->maximum->clear();
             ui->mediana->clear();
-            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), nullptr, context.metrix));
+            ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), context.graphPoints, context.metrix));
         }
     }
 }
@@ -242,5 +242,5 @@ void MainWindow::updateGraph(const LinkedList* points) {
 
 void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
-    updateGraph(context.metrix.graphPoints);
+    updateGraph(context.graphPoints);
 }

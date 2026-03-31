@@ -98,28 +98,27 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
   LinkedList* tempList = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
-    if (context->metrix.graphPoints != NULL) {
-      disposeList(context->metrix.graphPoints);
-      context->metrix.graphPoints = NULL;
+    if (context->graphPoints != NULL) {
+      disposeList(context->graphPoints);
+      context->graphPoints = NULL;
     }
 
     tempList = initLinkedList(sizeof(double));
-    metrix.graphPoints = initLinkedList(sizeof(GraphPoint));
-    if (tempList != NULL && metrix.graphPoints != NULL &&
-        fillSortedData(context->list, tempList, metrix.graphPoints, region, column)) {
+    context->graphPoints = initLinkedList(sizeof(GraphPoint));
+    if (tempList != NULL && context->graphPoints != NULL &&
+        fillSortedData(context->list, tempList, context->graphPoints, region, column)) {
 
       if (tempList->size > 0) {
         findMetrix(tempList, &metrix);
         context->programmStatus = STATUS_OK;
       } else
           context->programmStatus = ERR_INVALID_REGION;
-
     } else
         context->programmStatus = ERR_MALLOC_FAILED;
     disposeList(tempList);
-    if (context->programmStatus != STATUS_OK && metrix.graphPoints != NULL) {
-      disposeList(metrix.graphPoints);
-      metrix.graphPoints = NULL;
+    if (context->programmStatus != STATUS_OK && context->graphPoints != NULL) {
+      disposeList(context->graphPoints);
+      context->graphPoints = NULL;
     }
   }
   return metrix;

@@ -15,7 +15,6 @@ typedef struct {
     double min;
     double max;
     double mediana;
-    LinkedList* graphPoints; //
 } Metrix;
 
 double getValueByColumn(DemographicRecord* record, Column column);
