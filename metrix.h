@@ -9,13 +9,13 @@ typedef struct AppContext AppContext;
 typedef struct {
     int year;
     double value;
-} GraphPoint;
+} GraphPoint; // //
 
 typedef struct {
     double min;
     double max;
     double mediana;
-    LinkedList* graphPoints;
+    LinkedList* graphPoints; //
 } Metrix;
 
 double getValueByColumn(DemographicRecord* record, Column column);

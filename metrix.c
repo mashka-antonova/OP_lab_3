@@ -28,7 +28,7 @@ double getValueByColumn(DemographicRecord* record, Column column) {
       value = record->urbanization;
       break;
     default:
-      break;
+      break; // nice
   }
   return value;
 }
@@ -59,9 +59,9 @@ int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* poin
   Iterator it = begin(sourceList);
   while(hasNext(&it) && isCorrect) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
-    if (strcmp(reg, record->region) == 0) {
+    if (strcmp(reg, record->region) == 0) { //
         double val = getValueByColumn(record, col);
-        GraphPoint point = {0};
+        GraphPoint point = {0}; // // with debugger
         point.year = record->year;
         point.value = val;
         if (!insertSort(resList, &val, compareDoubles) ||
@@ -86,24 +86,26 @@ void findMetrix(LinkedList* list, Metrix* metrix) {
     metrix->mediana = *(double*)get(&it);
   else {
     double valRight = *(double*)get(&it);
-    double valLeft = *(double*)it.current->prev->data;
+    double valLeft = *(double*)it.current->prev->data; //
     metrix->mediana = (valLeft + valRight) / 2.0;
   }
 }
 
 Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
-  Metrix metrix = {0};
+  Metrix metrix = {0}; //
   LinkedList* tempList = NULL;
-  metrix.graphPoints = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
+
     if (context->metrix.graphPoints != NULL) {
       disposeList(context->metrix.graphPoints);
       context->metrix.graphPoints = NULL;
     }
+
     tempList = initLinkedList(sizeof(double));
     metrix.graphPoints = initLinkedList(sizeof(GraphPoint));
     if (tempList != NULL && metrix.graphPoints != NULL &&
         fillSortedData(context->list, tempList, metrix.graphPoints, region, column)) {
+
       if (tempList->size > 0) {
         findMetrix(tempList, &metrix);
         context->programmStatus = STATUS_OK;

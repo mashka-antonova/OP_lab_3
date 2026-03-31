@@ -16,6 +16,6 @@ void doOperation(Operation operation, AppContext* context, AppParams* params) {
       break;
 
     case DISPOSE_CONTEXT:
-      disposeContext(context);
+      disposeContext(context); //
   }
 }

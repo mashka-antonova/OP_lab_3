@@ -87,7 +87,6 @@ int insertSort(LinkedList* list, const void* data, int (*cmp)(const void*, const
       }
       list->size++;
   }
-
   return isCorrect;
 }
 

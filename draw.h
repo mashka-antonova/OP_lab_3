@@ -38,6 +38,6 @@ typedef struct {
     double maxValue;
 } GraphBounds;
 
-QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix);
+QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix); //
 
 #endif // DRAW_H
