@@ -6,6 +6,7 @@
 #include <QIcon>
 #include <QClipboard>
 #include <QResizeEvent>
+#include <QStandardPaths>
 
 #define defaultGraphWidth 480
 #define defaultGraphHeight 320
@@ -87,7 +88,10 @@ void MainWindow::showError(){
 
 void MainWindow::selectFileClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Choose CSV file", "", "CSV Files (*.csv);;All Files (*)"); //
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    QString initialDir = desktopPath + "/OP";
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose CSV file", initialDir, "CSV Files (*.csv);;All Files (*)");
+
     if (!fileName.isEmpty())
         ui->filePath->setText(fileName);
     else

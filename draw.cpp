@@ -159,6 +159,17 @@ void adjustGraphValueBounds(GraphBounds* bounds) {
     bounds->maxValue = roundUpToStep(bounds->maxValue, VALUE_STEP) + VALUE_STEP;
 }
 
+void adjustGraphYearBounds(GraphBounds* bounds) {
+    if (isEqual(bounds->minYear, bounds->maxYear)) {
+        bounds->minYear -= 1.0;
+        bounds->maxYear += 1.0;
+    } else {
+        int offset = getMaxInt(1, (int)((bounds->maxYear - bounds->minYear) * 0.05));
+        bounds->minYear -= offset;
+        bounds->maxYear += offset;
+    }
+}
+
 QRect buildGraphRect(QSize size) {
     return QRect(leftPadding, topPadding,
                  size.width() - leftPadding - rightPadding,
@@ -204,7 +215,7 @@ void drawDataLine(DrawContext* ctx, const QList<QPoint>* drawPoints) {
 }
 
 void drawDataPoints(DrawContext* ctx, const QList<QPoint>* drawPoints) {
-    if (drawPoints == nullptr){
+    if (drawPoints != nullptr){
         ctx->painter->setBrush(QColor("#00FF00"));
         for (int i = 0; i < drawPoints->size(); ++i)
             ctx->painter->drawEllipse(drawPoints->at(i), pointRadius, pointRadius);
@@ -222,6 +233,7 @@ QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix) {
     else {
         GraphBounds bounds = calculateGraphBounds(points);
         adjustGraphValueBounds(&bounds);
+        //adjustGraphYearBounds(&bounds);
 
         DrawContext ctx = { &painter, buildGraphRect(size), size, bounds, metrix };
 
