@@ -233,7 +233,7 @@ QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix) {
     else {
         GraphBounds bounds = calculateGraphBounds(points);
         adjustGraphValueBounds(&bounds);
-        //adjustGraphYearBounds(&bounds);
+        adjustGraphYearBounds(&bounds);
 
         DrawContext ctx = { &painter, buildGraphRect(size), size, bounds, metrix };
 

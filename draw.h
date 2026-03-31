@@ -32,7 +32,7 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    double minYear;
+    double minYear; //x y
     double maxYear;
     double minValue;
     double maxValue;
