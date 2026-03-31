@@ -38,6 +38,13 @@ typedef struct {
     double maxValue;
 } GraphBounds;
 
-QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, const Metrix& metrix); //
+struct DrawContext {
+    QPainter* painter;
+    QRect rect;
+    QSize size;
+    GraphBounds bounds;
+    Metrix metrix;
+};
+QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix);
 
 #endif // DRAW_H
