@@ -32,7 +32,7 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    double minX; //x y
+    double minX;
     double maxX;
     double minY;
     double maxY;
@@ -40,11 +40,13 @@ typedef struct {
 
 struct DrawContext {
     QPainter* painter;
-    QRect rect;
+    int width;
+    int height;
     QSize size;
     GraphBounds bounds;
     Metrix metrix;
 };
+
 QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix);
 
 #endif // DRAW_H
