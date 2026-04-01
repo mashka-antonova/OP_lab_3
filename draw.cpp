@@ -2,7 +2,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QList>
-#include <QPoint>
+#include <QLine>
 #include <math.h>
 
 extern "C" {
@@ -185,40 +185,54 @@ void drawAxesAndTitles(DrawContext* ctx) {
     ctx->painter->drawText(ctx->rect.center().x() - axisTitleXOffset, ctx->size.height() - axisTitleYOffset, "Year");
 }
 
-QList<QPoint> buildDrawPoints(const LinkedList* points, DrawContext* ctx) {
-    QList<QPoint> drawPoints;
-    if (points != nullptr) {
-        drawPoints.reserve(points->size);
+QList<QLine> buildLines(const LinkedList* points, DrawContext* ctx) {
+    QList<QLine> lines;
+    if (points != nullptr && points->size > 0) {
+        lines.reserve(points->size > 1 ? points->size - 1 : 1);
         Iterator it = begin((LinkedList*)points);
-        while (hasNext(&it)) {
-            GraphPoint* point = (GraphPoint*)get(&it);
-            int x = mapToX((int)point->x, (int)ctx->bounds.minYear, (int)ctx->bounds.maxYear, ctx->rect);
-            int y = mapToY(point->y, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
-            drawPoints.append(QPoint(x, y));
-            next(&it);
+
+        GraphPoint* firstPoint = (GraphPoint*)get(&it);
+        int prevX = mapToX((int)firstPoint->x, (int)ctx->bounds.minYear, (int)ctx->bounds.maxYear, ctx->rect);
+        int prevY = mapToY(firstPoint->y, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+
+        next(&it);
+        if (!hasNext(&it)) {
+            lines.append(QLine(prevX, prevY, prevX, prevY));
+        } else {
+            while (hasNext(&it)) {
+                GraphPoint* point = (GraphPoint*)get(&it);
+                int x = mapToX((int)point->x, (int)ctx->bounds.minYear, (int)ctx->bounds.maxYear, ctx->rect);
+                int y = mapToY(point->y, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+
+                lines.append(QLine(prevX, prevY, x, y));
+
+                prevX = x;
+                prevY = y;
+                next(&it);
+            }
         }
     }
-    return drawPoints;
+    return lines;
 }
 
-void drawDataLine(DrawContext* ctx, const QList<QPoint>* drawPoints) {
-    if (drawPoints != nullptr && !drawPoints->isEmpty()) {
+void drawLines(DrawContext* ctx, const QList<QLine>* lines) {
+    if (lines != nullptr && !lines->isEmpty()) {
         ctx->painter->setBrush(Qt::NoBrush);
         ctx->painter->setPen(QPen(QColor("#00FF00"), thickLineWidth));
-        QPainterPath path;
-        path.moveTo(drawPoints->first());
-        for (int i = 1; i < drawPoints->size(); ++i)
-            path.lineTo(drawPoints->at(i));
-
-        ctx->painter->drawPath(path);
+        ctx->painter->drawLines(*lines);
     }
 }
 
-void drawDataPoints(DrawContext* ctx, const QList<QPoint>* drawPoints) {
-    if (drawPoints != nullptr){
+void drawPoints(DrawContext* ctx, const QList<QLine>* drawLines) {
+    if (drawLines != nullptr && !drawLines->isEmpty()){
         ctx->painter->setBrush(QColor("#00FF00"));
-        for (int i = 0; i < drawPoints->size(); ++i)
-            ctx->painter->drawEllipse(drawPoints->at(i), pointRadius, pointRadius);
+
+        for (int i = 0; i < drawLines->size(); ++i)
+            ctx->painter->drawEllipse(drawLines->at(i).p1(), pointRadius, pointRadius);
+
+        if (drawLines->size() > 1 || drawLines->first().p1() != drawLines->first().p2()) {
+            ctx->painter->drawEllipse(drawLines->last().p2(), pointRadius, pointRadius);
+        }
     }
 }
 
@@ -241,9 +255,10 @@ QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix) {
         drawXAxisTicks(&ctx);
         drawMetricDecorations(&ctx);
 
-        QList<QPoint> drawPoints = buildDrawPoints(points, &ctx);
-        drawDataLine(&ctx, &drawPoints);
-        drawDataPoints(&ctx, &drawPoints);
+        QList<QLine> lines = buildLines(points, &ctx);
+        drawLines(&ctx, &lines);
+        drawPoints(&ctx, &lines);
+
     }
     return pixmap;
 }
