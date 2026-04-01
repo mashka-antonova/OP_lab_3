@@ -12,12 +12,17 @@ typedef struct {
 } GraphPoint;
 
 typedef struct {
+    int startYear;
+    int endYear;
+} YearInfo;
+
+typedef struct {
     double min;
     double max;
     double mediana;
 } Metrix;
 
 double getValueByColumn(DemographicRecord* record, Column column);
-Metrix calculateMetrix(AppContext* context, const char* region, Column columnIndex);
+Metrix calculateMetrix(AppContext* context, const char* region, Column columnIndex, YearInfo yearInfo);
 
 #endif // METRIX_H

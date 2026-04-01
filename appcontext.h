@@ -5,7 +5,7 @@
 #include "metrix.h"
 
 typedef enum {
-    STATUS_OK, //
+    OK,
     ERR_FILE_OPEN,
     ERR_INVALID_HEADER,
     ERR_MALLOC_FAILED,
@@ -14,14 +14,14 @@ typedef enum {
     ERR_INVALID_COLUMN,
 } Status;
 
-typedef struct FileStats { //
+typedef struct rowsInfo {
     int totalRows;
-    int errorRows; //
-} FileStats;
+    int invalidRows;
+} RowsInfo;
 
 typedef struct AppContext {
     LinkedList* list;
-    FileStats stats;
+    RowsInfo rowsInfo;
     Status programmStatus;
     Metrix metrix;
     LinkedList* graphPoints;

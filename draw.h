@@ -32,10 +32,10 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    double minYear; //x y
-    double maxYear;
-    double minValue;
-    double maxValue;
+    double minX; //x y
+    double maxX;
+    double minY;
+    double maxY;
 } GraphBounds;
 
 struct DrawContext {

@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->graph->setMinimumSize(defaultGraphWidth, defaultGraphHeight);
     ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), context.graphPoints, context.metrix));
+
+    ui->yearFrom->setValue(1991);
+    ui->yearTo->setValue(2012);
 }
 
 MainWindow::~MainWindow()
@@ -54,7 +57,7 @@ MainWindow::~MainWindow()
 QString MainWindow::errorText(Status error){
     QString str;
     switch(error){
-    case STATUS_OK:
+    case OK:
         str = "";
         break;
     case ERR_MALLOC_FAILED:
@@ -111,7 +114,7 @@ void MainWindow::loadDataClicked()
         doOperation(LOAD_DATA, &context, &params);
         showError();
 
-        if (context.programmStatus == STATUS_OK) {
+        if (context.programmStatus == OK) {
             ui->regionInput->blockSignals(true);
             ui->regionInput->clear();
             ui->regionInput->addItem("");
@@ -132,16 +135,16 @@ void MainWindow::loadDataClicked()
             ui->regionInput->blockSignals(false);
         }
 
-        int successRows = context.stats.totalRows - context.stats.errorRows;
+        int successRows = context.rowsInfo.totalRows - context.rowsInfo.invalidRows;
         QMessageBox msgBox(this);
         msgBox.setWindowTitle("TERMINAL NOTIFICATION");
         msgBox.setText(QString("FILE ANALYSIS COMPLETE:\n\n"
                                "TOTAL RECORDS: %1\n"
                                "SUCCESSFULLY READ: %2\n"
                                "ERRORS: %3")
-                           .arg(context.stats.totalRows)
+                           .arg(context.rowsInfo.totalRows)
                            .arg(successRows)
-                           .arg(context.stats.errorRows));
+                           .arg(context.rowsInfo.invalidRows));
 
         msgBox.setStyleSheet(
             "QMessageBox {"
@@ -214,14 +217,24 @@ void MainWindow::calculateMetricsClicked() {
     const char* cStr = str.c_str();
     Column column = static_cast<Column>(ui->columnInput->currentData().toInt());
 
+    YearInfo years;
+    years.startYear = ui->yearFrom->value();
+    years.endYear = ui->yearTo->value();
+
+    if (years.startYear > years.endYear) {
+        std::swap(years.startYear, years.endYear);
+        ui->yearFrom->setValue(years.startYear);
+        ui->yearTo->setValue(years.endYear);
+    }
+
     if (str.empty())
         ui->outputErrorLabel->setText("Empty region. To calculate metrix need region");
     else {
-        AppParams params = {.str = cStr, .column = column};
+        AppParams params = {.str = cStr, .column = column, .years = years};
         doOperation(CALCULATE_METRICS, &context, &params);
         showError();
 
-        if (context.programmStatus == STATUS_OK) {
+        if (context.programmStatus == OK) {
             ui->minimum->setText(QString::number(context.metrix.min));
             ui->maximum->setText(QString::number(context.metrix.max));
             ui->mediana->setText(QString::number(context.metrix.mediana));

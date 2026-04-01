@@ -8,7 +8,7 @@ void doOperation(Operation operation, AppContext* context, AppParams* params) {
       break;
 
     case CALCULATE_METRICS:
-      runCalculateMetricsTask(context, params->str, params->column);
+      runCalculateMetricsTask(context, params->str, params->column, params->years);
       break;
 
     case INITIALIZATION:

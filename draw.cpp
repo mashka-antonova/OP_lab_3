@@ -65,17 +65,17 @@ GraphBounds calculateGraphBounds(const LinkedList* points) {
     GraphBounds bounds;
     Iterator it = begin((LinkedList*)points);
     GraphPoint* firstPoint = (GraphPoint*)get(&it);
-    bounds.minYear = firstPoint->x;
-    bounds.maxYear = firstPoint->x;
-    bounds.minValue = firstPoint->y;
-    bounds.maxValue = firstPoint->y;
+    bounds.minX = firstPoint->x;
+    bounds.maxX = firstPoint->x;
+    bounds.minY = firstPoint->y;
+    bounds.maxY = firstPoint->y;
 
     while (hasNext(&it)) {
         GraphPoint* point = (GraphPoint*)get(&it);
-        bounds.minYear = getMinDouble(point->x, bounds.minYear);
-        bounds.maxYear = getMaxDouble(point->x, bounds.maxYear);
-        bounds.minValue = getMinDouble(point->y, bounds.minValue);
-        bounds.maxValue = getMaxDouble(point->y, bounds.maxValue);
+        bounds.minX = getMinDouble(point->x, bounds.minX);
+        bounds.maxX = getMaxDouble(point->x, bounds.maxX);
+        bounds.minY = getMinDouble(point->y, bounds.minY);
+        bounds.maxY = getMaxDouble(point->y, bounds.maxY);
         next(&it);
     }
     return bounds;
@@ -89,45 +89,45 @@ void drawNoDataState(QPainter* painter, QSize size) {
 }
 
 void drawMetricLine(DrawContext* ctx, double value, QColor color, QString label) {
-    const int yCoord = mapToY(value, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+    const int yCoord = mapToY(value, ctx->bounds.minY, ctx->bounds.maxY, ctx->rect);
     ctx->painter->setPen(QPen(color, thinLineWidth, Qt::DashLine));
     ctx->painter->drawLine(ctx->rect.left(), yCoord, ctx->rect.right(), yCoord);
     ctx->painter->drawText(ctx->rect.left() + textOffset, yCoord - textOffset, label);
 }
 
 void drawXAxisTicks(DrawContext* ctx) {
-    int minYear = (int)ctx->bounds.minYear;
-    int maxYear = (int)ctx->bounds.maxYear;
+    int minX = (int)ctx->bounds.minX;
+    int maxX = (int)ctx->bounds.maxX;
 
-    int yearRange = getMaxInt(1, maxYear - minYear);
-    int yearTickStep = getMaxInt(1, (int)ceil((double)yearRange / maxAxisTicks));
+    int xRange = getMaxInt(1, maxX - minX);
+    int xTickStep = getMaxInt(1, (int)ceil((double)xRange / maxAxisTicks));
 
     ctx->painter->setPen(QPen(QColor("#00AA00"), thinLineWidth, Qt::DashLine));
-    int lastTickYear = minYear;
-    for (int year = minYear; year <= maxYear; year += yearTickStep) {
-        if (year == maxYear - borderCorrection)
+    int lastTickYear = minX;
+    for (int year = minX; year <= maxX; year += xTickStep) {
+        if (year == maxX - borderCorrection)
             continue;
 
         lastTickYear = year;
 
-        int xCoord = mapToX(year, minYear, maxYear, ctx->rect);
+        int xCoord = mapToX(year, minX, maxX, ctx->rect);
         ctx->painter->drawLine(xCoord, ctx->rect.bottom(), xCoord, ctx->rect.top());
         ctx->painter->setPen(QColor("#00FF00"));
         ctx->painter->drawText(xCoord - yearLabelXOffset, ctx->rect.bottom() + yearLabelYOffset, QString::number(year));
         ctx->painter->setPen(QPen(QColor("#00AA00"), thinLineWidth, Qt::DashLine));
     }
 
-    if (lastTickYear != maxYear) {
-        int xCoord = mapToX(maxYear, minYear, maxYear, ctx->rect);
+    if (lastTickYear != maxX) {
+        int xCoord = mapToX(maxX, minX, maxX, ctx->rect);
         ctx->painter->drawLine(xCoord, ctx->rect.bottom(), xCoord, ctx->rect.top());
         ctx->painter->setPen(QColor("#00FF00"));
-        ctx->painter->drawText(xCoord - yearLabelXOffset, ctx->rect.bottom() + yearLabelYOffset, QString::number(maxYear));
+        ctx->painter->drawText(xCoord - yearLabelXOffset, ctx->rect.bottom() + yearLabelYOffset, QString::number(maxX));
     }
 }
 
 void drawMetricDecorations(DrawContext* ctx) {
-    ctx->painter->drawText(ctx->rect.left() - boundsLabelXOffset, ctx->rect.top() + boundsLabelYOffset, QString::number(ctx->bounds.maxValue, 'f', 2));
-    ctx->painter->drawText(ctx->rect.left() - boundsLabelXOffset, ctx->rect.bottom() + boundsLabelYOffset, QString::number(ctx->bounds.minValue, 'f', 2));
+    ctx->painter->drawText(ctx->rect.left() - boundsLabelXOffset, ctx->rect.top() + boundsLabelYOffset, QString::number(ctx->bounds.maxY, 'f', 2));
+    ctx->painter->drawText(ctx->rect.left() - boundsLabelXOffset, ctx->rect.bottom() + boundsLabelYOffset, QString::number(ctx->bounds.minY, 'f', 2));
 
     drawMetricLine(ctx, ctx->metrix.max, QColor("#FF3333"), "Max");
     drawMetricLine(ctx, ctx->metrix.mediana, QColor("#FFFF00"), "Median");
@@ -141,7 +141,7 @@ void drawMetricDecorations(DrawContext* ctx) {
 
     int pointsCount = sizeof(metricPoints) / sizeof(metricPoints[0]);
     for (int i = 0; i < pointsCount; ++i) {
-        int yCoord = mapToY(metricPoints[i].value, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+        int yCoord = mapToY(metricPoints[i].value, ctx->bounds.minY, ctx->bounds.maxY, ctx->rect);
         ctx->painter->setPen(QPen(metricPoints[i].color, thickLineWidth));
         ctx->painter->setBrush(metricPoints[i].color);
         ctx->painter->drawEllipse(QPoint(ctx->rect.left(), yCoord), pointRadius + metricPointExtraRadius, pointRadius + metricPointExtraRadius);
@@ -150,23 +150,23 @@ void drawMetricDecorations(DrawContext* ctx) {
 }
 
 void adjustGraphValueBounds(GraphBounds* bounds) {
-    if (isEqual(bounds->minValue, bounds->maxValue)) {
-        bounds->minValue -= FALLBACK_VALUE_OFFSET;
-        bounds->maxValue += FALLBACK_VALUE_OFFSET;
+    if (isEqual(bounds->minY, bounds->maxY)) {
+        bounds->minY -= FALLBACK_VALUE_OFFSET;
+        bounds->maxY += FALLBACK_VALUE_OFFSET;
     }
 
-    bounds->minValue = roundDownToStep(bounds->minValue, VALUE_STEP) - VALUE_STEP;
-    bounds->maxValue = roundUpToStep(bounds->maxValue, VALUE_STEP) + VALUE_STEP;
+    bounds->minY = roundDownToStep(bounds->minY, VALUE_STEP) - VALUE_STEP;
+    bounds->maxY = roundUpToStep(bounds->maxY, VALUE_STEP) + VALUE_STEP;
 }
 
 void adjustGraphYearBounds(GraphBounds* bounds) {
-    if (isEqual(bounds->minYear, bounds->maxYear)) {
-        bounds->minYear -= 1.0;
-        bounds->maxYear += 1.0;
+    if (isEqual(bounds->minX, bounds->maxX)) {
+        bounds->minX -= 1.0;
+        bounds->maxX += 1.0;
     } else {
-        int offset = getMaxInt(1, (int)((bounds->maxYear - bounds->minYear) * 0.05));
-        bounds->minYear -= offset;
-        bounds->maxYear += offset;
+        int offset = getMaxInt(1, (int)((bounds->maxX - bounds->minX) * 0.05));
+        bounds->minX -= offset;
+        bounds->maxX += offset;
     }
 }
 
@@ -192,8 +192,8 @@ QList<QLine> buildLines(const LinkedList* points, DrawContext* ctx) {
         Iterator it = begin((LinkedList*)points);
 
         GraphPoint* firstPoint = (GraphPoint*)get(&it);
-        int prevX = mapToX((int)firstPoint->x, (int)ctx->bounds.minYear, (int)ctx->bounds.maxYear, ctx->rect);
-        int prevY = mapToY(firstPoint->y, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+        int prevX = mapToX((int)firstPoint->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->rect);
+        int prevY = mapToY(firstPoint->y, ctx->bounds.minY, ctx->bounds.maxY, ctx->rect);
 
         next(&it);
         if (!hasNext(&it)) {
@@ -201,8 +201,8 @@ QList<QLine> buildLines(const LinkedList* points, DrawContext* ctx) {
         } else {
             while (hasNext(&it)) {
                 GraphPoint* point = (GraphPoint*)get(&it);
-                int x = mapToX((int)point->x, (int)ctx->bounds.minYear, (int)ctx->bounds.maxYear, ctx->rect);
-                int y = mapToY(point->y, ctx->bounds.minValue, ctx->bounds.maxValue, ctx->rect);
+                int x = mapToX((int)point->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->rect);
+                int y = mapToY(point->y, ctx->bounds.minY, ctx->bounds.maxY, ctx->rect);
 
                 lines.append(QLine(prevX, prevY, x, y));
 

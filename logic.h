@@ -6,7 +6,7 @@
 void initContext(AppContext* context);
 int compareRecords(const void* a, const void* b);
 void runLoadDataTask(AppContext* context, const char* fileName);
-void runCalculateMetricsTask(AppContext* context, const char* region, Column column);
+void runCalculateMetricsTask(AppContext* context, const char* region, Column column, YearInfo years);
 void disposeContext(AppContext* context);
 
 #endif // LOGIC_H

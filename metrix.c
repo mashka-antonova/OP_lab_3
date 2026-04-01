@@ -53,13 +53,12 @@ int compareGraphPoints(const void* a, const void* b) {
   const GraphPoint* p2 = (const GraphPoint*)b;
   return p1->x - p2->x;
 }
-
-int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col) {
+int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col, YearInfo years) {
   int isCorrect = 1;
   Iterator it = begin(sourceList);
   while(hasNext(&it) && isCorrect) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
-    if (!strcmp(reg, record->region)) {
+    if (!strcmp(reg, record->region) && record->year >= years.startYear && record->year <= years.endYear) {
         double val = getValueByColumn(record, col);
         GraphPoint point;
         point.x = record->year;
@@ -93,8 +92,8 @@ void findMetrix(LinkedList* list, Metrix* metrix) {
   }
 }
 
-Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
-  Metrix metrix = {0}; //
+Metrix calculateMetrix(AppContext* context, const char* region, Column column, YearInfo years) {
+  Metrix metrix = {0};
   LinkedList* tempList = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
@@ -106,17 +105,17 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column) {
     tempList = initLinkedList(sizeof(double));
     context->graphPoints = initLinkedList(sizeof(GraphPoint));
     if (tempList != NULL && context->graphPoints != NULL &&
-        fillSortedData(context->list, tempList, context->graphPoints, region, column)) {
+        fillSortedData(context->list, tempList, context->graphPoints, region, column, years)) {
 
       if (tempList->size > 0) {
         findMetrix(tempList, &metrix);
-        context->programmStatus = STATUS_OK;
+        context->programmStatus = OK;
       } else
           context->programmStatus = ERR_INVALID_REGION;
     } else
         context->programmStatus = ERR_MALLOC_FAILED;
     disposeList(tempList);
-    if (context->programmStatus != STATUS_OK && context->graphPoints != NULL) {
+    if (context->programmStatus != OK && context->graphPoints != NULL) {
       disposeList(context->graphPoints);
       context->graphPoints = NULL;
     }

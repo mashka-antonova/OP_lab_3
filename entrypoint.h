@@ -14,6 +14,7 @@ typedef enum {
 typedef struct {
     const char* str;
     Column column;
+    YearInfo years;
 } AppParams;
 
 void doOperation(Operation operation, AppContext* context, AppParams* params);
