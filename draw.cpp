@@ -152,13 +152,13 @@ QList<QLine> buildLines(const LinkedList* points, DrawContext* ctx) {
     if (points != nullptr && points->size > 0) {
         Iterator it = begin((LinkedList*)points);
         GraphPoint* prev = (GraphPoint*)get(&it);
-        int prevX = mapToX((int)prev->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->height);
+        int prevX = mapToX((int)prev->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->width);
         int prevY = mapToY(prev->y, ctx->bounds.minY, ctx->bounds.maxY, ctx->height);
 
         next(&it);
         while (hasNext(&it)) {
             GraphPoint* p = (GraphPoint*)get(&it);
-            int x = mapToX((int)p->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->height);
+            int x = mapToX((int)p->x, (int)ctx->bounds.minX, (int)ctx->bounds.maxX, ctx->width);
             int y = mapToY(p->y, ctx->bounds.minY, ctx->bounds.maxY, ctx->height);
             lines.append(QLine(prevX, prevY, x, y));
             prevX = x;
@@ -177,15 +177,15 @@ void drawLines(DrawContext* ctx, const QList<QLine>* lines) {
     }
 }
 
-void drawPoints(DrawContext* ctx, const QList<QLine>* drawLines) {
-    if (drawLines != nullptr && !drawLines->isEmpty()){
+void drawPoints(DrawContext* ctx, const QList<QLine>* lines) {
+    if (lines != nullptr && !lines->isEmpty()){
         ctx->painter->setBrush(QColor("#00FF00"));
 
-        for (int i = 0; i < drawLines->size(); ++i)
-            ctx->painter->drawEllipse(drawLines->at(i).p1(), pointRadius, pointRadius);
+        for (int i = 0; i < lines->size(); ++i)
+            ctx->painter->drawEllipse(lines->at(i).p1(), pointRadius, pointRadius);
 
-        if (drawLines->size() > 1 || drawLines->first().p1() != drawLines->first().p2()) {
-            ctx->painter->drawEllipse(drawLines->last().p2(), pointRadius, pointRadius);
+        if (lines->size() > 1 || lines->first().p1() != lines->first().p2()) {
+            ctx->painter->drawEllipse(lines->last().p2(), pointRadius, pointRadius);
         }
     }
 }
@@ -219,6 +219,7 @@ QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix) {
         QList<QLine> lines = buildLines(points, &ctx);
         ctx.painter->setPen(QPen(QColor("#00FF00"), thickLineWidth));
         ctx.painter->drawLines(lines);
+        drawPoints(&ctx, &lines);
 
         painter.restore();
     }
