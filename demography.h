@@ -4,14 +4,14 @@
 #define MAX_REGION_NAME 128
 
 typedef enum {
-    COL_YEAR,
-    COL_REGION,
-    COL_NPG,
-    COL_BIRTH_RATE,
-    COL_DEATH_RATE,
-    COL_GDW,
-    COL_URBANIZATION,
-    COL_COUNT
+    YEAR,
+    REGION,
+    NPG,
+    BIRTH_RATE,
+    DEATH_RATE,
+    GDW,
+    URBANIZATION,
+    COUNT
 } Column;
 
 typedef struct {

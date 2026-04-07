@@ -33,7 +33,7 @@ int parseDemographyLine(char* line, DemographicRecord* record) {
       &record->general_demographic_weight,
       &record->urbanization);
 
-      if (scannedFields == COL_COUNT)
+      if (scannedFields == COUNT)
         isCorrect = 1;
     }
 

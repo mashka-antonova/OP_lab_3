@@ -28,14 +28,14 @@ MainWindow::MainWindow(QWidget *parent)
     doOperation(INITIALIZATION, &context, NULL);
 
     ui->columnInput->clear();
-    ui->columnInput->addItem("Year", COL_YEAR);
-    ui->columnInput->addItem("Natural Population Growth", COL_NPG);
-    ui->columnInput->addItem("Birth Rate", COL_BIRTH_RATE);
-    ui->columnInput->addItem("Death Rate", COL_DEATH_RATE);
-    ui->columnInput->addItem("General Demographic Weight", COL_GDW);
-    ui->columnInput->addItem("Urbanization", COL_URBANIZATION);
+    ui->columnInput->addItem("Year", YEAR);
+    ui->columnInput->addItem("Natural Population Growth", NPG);
+    ui->columnInput->addItem("Birth Rate", BIRTH_RATE);
+    ui->columnInput->addItem("Death Rate", DEATH_RATE);
+    ui->columnInput->addItem("General Demographic Weight", GDW);
+    ui->columnInput->addItem("Urbanization", URBANIZATION);
 
-    ui->tableWidget->setColumnCount(COL_COUNT);
+    ui->tableWidget->setColumnCount(COUNT);
     ui->tableWidget->setHorizontalHeaderLabels({
         "Year", "Region", "Nat.Growth", "Birth Rate",
         "Death Rate", "Dem.Weight", "Urbanization"
@@ -195,13 +195,13 @@ void MainWindow::updateTable(const QString& region) {
             if (!isRegionEmpty)
                 isRegionFound = true;
             ui->tableWidget->insertRow(row);
-            ui->tableWidget->setItem(row, COL_YEAR, new QTableWidgetItem(QString::number(record->year)));
-            ui->tableWidget->setItem(row, COL_REGION, new QTableWidgetItem(recordRegion));
-            ui->tableWidget->setItem(row, COL_NPG, new QTableWidgetItem(QString::number(record->natural_population_growth)));
-            ui->tableWidget->setItem(row, COL_BIRTH_RATE, new QTableWidgetItem(QString::number(record->birth_rate)));
-            ui->tableWidget->setItem(row, COL_DEATH_RATE, new QTableWidgetItem(QString::number(record->death_rate)));
-            ui->tableWidget->setItem(row, COL_GDW, new QTableWidgetItem(QString::number(record->general_demographic_weight)));
-            ui->tableWidget->setItem(row, COL_URBANIZATION, new QTableWidgetItem(QString::number(record->urbanization)));
+            ui->tableWidget->setItem(row, YEAR, new QTableWidgetItem(QString::number(record->year)));
+            ui->tableWidget->setItem(row, REGION, new QTableWidgetItem(recordRegion));
+            ui->tableWidget->setItem(row, NPG, new QTableWidgetItem(QString::number(record->natural_population_growth)));
+            ui->tableWidget->setItem(row, BIRTH_RATE, new QTableWidgetItem(QString::number(record->birth_rate)));
+            ui->tableWidget->setItem(row, DEATH_RATE, new QTableWidgetItem(QString::number(record->death_rate)));
+            ui->tableWidget->setItem(row, GDW, new QTableWidgetItem(QString::number(record->general_demographic_weight)));
+            ui->tableWidget->setItem(row, URBANIZATION, new QTableWidgetItem(QString::number(record->urbanization)));
             row++;
         }
         next(&it);
@@ -249,7 +249,7 @@ void MainWindow::calculateMetricsClicked() {
 }
 
 void MainWindow::tableItemDoubleClicked(QTableWidgetItem *item) {
-    if (item && item->column() == COL_REGION)
+    if (item && item->column() == REGION)
         QGuiApplication::clipboard()->setText(item->text());
 }
 

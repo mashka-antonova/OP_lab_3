@@ -6,6 +6,7 @@ extern "C" {
 #include "entrypoint.h"
 #include "iterator.h"
 #include "demography.h"
+#include "logic.h"
 }
 
 #include <QMainWindow>

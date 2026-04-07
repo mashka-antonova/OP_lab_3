@@ -7,6 +7,7 @@
 
 extern "C" {
 #include "metrix.h"
+#include "logic.h"
 }
 
 typedef enum {
@@ -32,10 +33,8 @@ typedef enum {
 } Sizes;
 
 typedef struct {
-    double minX;
-    double maxX;
-    double minY;
-    double maxY;
+    GraphPoint max;
+    GraphPoint min;
 } GraphBounds;
 
 struct DrawContext {
@@ -47,6 +46,6 @@ struct DrawContext {
     Metrix metrix;
 };
 
-QPixmap buildGraphPixmap(QSize size, const LinkedList* points, Metrix metrix);
+QPixmap buildGraphPixmap(QSize& size, const LinkedList* points, Metrix& metrix);
 
 #endif // DRAW_H

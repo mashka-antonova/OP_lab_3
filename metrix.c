@@ -9,22 +9,22 @@
 double getValueByColumn(DemographicRecord* record, Column column) {
   double value = 0;
   switch (column) {
-    case COL_YEAR:
+    case YEAR:
       value = record->year;
       break;
-    case COL_NPG:
+    case NPG:
       value = record->natural_population_growth;
       break;
-    case COL_BIRTH_RATE:
+    case BIRTH_RATE:
       value = record->birth_rate;
       break;
-    case COL_DEATH_RATE:
+    case DEATH_RATE:
       value = record->death_rate;
       break;
-    case COL_GDW:
+    case GDW:
       value = record->general_demographic_weight;
       break;
-    case COL_URBANIZATION:
+    case URBANIZATION:
       value = record->urbanization;
       break;
     default:
@@ -35,7 +35,7 @@ double getValueByColumn(DemographicRecord* record, Column column) {
 
 int checkColumn(AppContext* context, Column column) {
   int isCorrect = 1;
-  if (column < COL_YEAR || column > COL_URBANIZATION || column == COL_REGION) {
+  if (column < YEAR || column > URBANIZATION || column == REGION) {
     context->programmStatus = ERR_INVALID_COLUMN;
     isCorrect = 0;
   }
@@ -53,8 +53,8 @@ int compareGraphPoints(const void* a, const void* b) {
   const GraphPoint* p2 = (const GraphPoint*)b;
   return p1->x - p2->x;
 }
-int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col, YearInfo years) {
-  int isCorrect = 1;
+int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col, YearInfo years) { //упростить
+  int isCorrect = 1; //
   Iterator it = begin(sourceList);
   while(hasNext(&it) && isCorrect) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
@@ -73,23 +73,25 @@ int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* poin
   return isCorrect;
 }
 
-void findMetrix(LinkedList* list, Metrix* metrix) {
-  metrix->min = *(double*)list->head->data;
-  metrix->max = *(double*)list->tail->data;
+Metrix buildMetrix(LinkedList* list) {
+  Metrix metrix;
+  metrix.min = *(double*)list->head->data;
+  metrix.max = *(double*)list->tail->data;
 
   int mid = list->size / 2;
   Iterator it = begin(list);
-  double prevVal = *(double*)get(&it);
+  double prevVal = *(double*)get(&it); //упростить через доступ по индексу
   for (int i = 0; i < mid; i++) {
     prevVal = *(double*)get(&it);
     next(&it);
   }
   if (list->size % 2 != 0)
-    metrix->mediana = *(double*)get(&it);
+    metrix.mediana = *(double*)get(&it);
   else {
     double valRight = *(double*)get(&it);
-    metrix->mediana = (prevVal + valRight) / 2.0;
+    metrix.mediana = (prevVal + valRight) / 2.0;
   }
+  return metrix;
 }
 
 Metrix calculateMetrix(AppContext* context, const char* region, Column column, YearInfo years) {
@@ -97,18 +99,16 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column, Y
   LinkedList* tempList = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
-    if (context->graphPoints != NULL) {
-      disposeList(context->graphPoints);
-      context->graphPoints = NULL;
-    }
+    if (context->graphPoints != NULL) //
+      clearList(context->graphPoints);
 
     tempList = initLinkedList(sizeof(double));
-    context->graphPoints = initLinkedList(sizeof(GraphPoint));
+    context->graphPoints = initLinkedList(sizeof(GraphPoint)); //
     if (tempList != NULL && context->graphPoints != NULL &&
         fillSortedData(context->list, tempList, context->graphPoints, region, column, years)) {
 
       if (tempList->size > 0) {
-        findMetrix(tempList, &metrix);
+        buildMetrix(tempList);
         context->programmStatus = OK;
       } else
           context->programmStatus = ERR_INVALID_REGION;

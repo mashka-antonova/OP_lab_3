@@ -38,9 +38,9 @@ void runLoadDataTask(AppContext* context, const char* fileName) {
     context->programmStatus = ERR_FILE_OPEN;
 }
 
-void runCalculateMetricsTask(AppContext* context, const char* region, Column column, YearInfo years) {
+void runCalculateMetricsTask(AppContext* context, AppParams* params) {
   context->programmStatus = OK;
-  context->metrix = calculateMetrix(context, region, column, years);
+  context->metrix = calculateMetrix(context, params->str, params->column, params->years);
 }
 
 void disposeContext(AppContext* context) {
