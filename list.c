@@ -116,3 +116,22 @@ void disposeList(LinkedList* list) {
 int isEmpty(const LinkedList* list) {
     return (list == NULL || list->size == 0);
 }
+
+void* getByIndex(const LinkedList* list, int index) {
+  void* data = NULL;
+  if (list != NULL && index >= 0 && index < list->size) {
+  LinkedNode* current;
+  if (index < list->size / 2) {
+    current = list->head;
+    for (int i = 0; i < index; i++)
+      current = current->next;
+  } else {
+    current = list->tail;
+    for (int i = list->size - 1; i > index; i--)
+      current = current->prev;
+    }
+    if (current != NULL)
+      data = current->data;
+  }
+    return data;
+}

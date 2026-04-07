@@ -76,21 +76,16 @@ int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* poin
 
 Metrix buildMetrix(LinkedList* list) {
   Metrix metrix;
-  metrix.min = *(double*)list->head->data;
-  metrix.max = *(double*)list->tail->data;
+  metrix.min = *(double*)getByIndex(list, 0);
+  metrix.max = *(double*)getByIndex(list, list->size - 1);
 
   int mid = list->size / 2;
-  Iterator it = begin(list);
-  double prevVal = *(double*)get(&it); //упростить через доступ по индексу
-  for (int i = 0; i < mid; i++) {
-    prevVal = *(double*)get(&it);
-    next(&it);
-  }
   if (list->size % 2 != 0)
-    metrix.mediana = *(double*)get(&it);
+    metrix.mediana = *(double*)getByIndex(list, mid);
   else {
-    double valRight = *(double*)get(&it);
-    metrix.mediana = (prevVal + valRight) / 2.0;
+    double valLeft = *(double*)getByIndex(list, mid - 1);
+    double valRight = *(double*)getByIndex(list, mid);
+    metrix.mediana = (valLeft + valRight) / 2.0;
   }
   return metrix;
 }
