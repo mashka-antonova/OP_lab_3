@@ -100,17 +100,18 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column, Y
   LinkedList* tempList = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
-    if (!isEmpty(context->graphPoints))
+    if (context->graphPoints == NULL)
+      context->graphPoints = initLinkedList(sizeof(GraphPoint));
+    else
       clearList(context->graphPoints);
 
     tempList = initLinkedList(sizeof(double));
-    context->graphPoints = initLinkedList(sizeof(GraphPoint));
 
     if (tempList != NULL && context->graphPoints != NULL &&
         fillSortedData(context->list, tempList, context->graphPoints, region, column, years)) {
 
       if (tempList->size > 0) {
-        buildMetrix(tempList);
+        metrix = buildMetrix(tempList);
         context->programmStatus = OK;
       } else
           context->programmStatus = ERR_INVALID_REGION;
