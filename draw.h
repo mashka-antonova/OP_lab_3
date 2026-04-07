@@ -46,6 +46,6 @@ struct DrawContext {
     Metrix metrix;
 };
 
-QPixmap buildGraphPixmap(QSize& size, const LinkedList* points, Metrix& metrix);
+QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, Metrix& metrix);
 
 #endif // DRAW_H

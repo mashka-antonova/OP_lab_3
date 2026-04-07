@@ -149,10 +149,10 @@ void drawAxesAndTitles(DrawContext* ctx) {
 
 QList<QLine> buildLines(const LinkedList* points, DrawContext* ctx) {
     QList<QLine> lines;
-    if (points != nullptr && points->size > 0) { // //
+    if (!isEmpty(points)) {
         Iterator it = begin((LinkedList*)points);
         GraphPoint* prev = (GraphPoint*)get(&it);
-        int prevX = mapToX((int)prev->x, (int)ctx->bounds.min.x, (int)ctx->bounds.max.x, ctx->width); //
+        int prevX = mapToX((int)prev->x, (int)ctx->bounds.min.x, (int)ctx->bounds.max.x, ctx->width);
         int prevY = mapToY(prev->y, ctx->bounds.min.y, ctx->bounds.max.y, ctx->height);
 
         next(&it);
@@ -182,7 +182,7 @@ void drawPoints(DrawContext* ctx, const QList<QLine>* lines) {
         ctx->painter->setBrush(QColor("#00FF00"));
 
         for (int i = 0; i < lines->size(); ++i)
-            ctx->painter->drawEllipse(lines->at(i).p1(), pointRadius, pointRadius); //
+            ctx->painter->drawEllipse(lines->at(i).p1(), pointRadius, pointRadius);
 
         if (lines->size() > 1 || lines->first().p1() != lines->first().p2()) {
             ctx->painter->drawEllipse(lines->last().p2(), pointRadius, pointRadius);
@@ -190,13 +190,13 @@ void drawPoints(DrawContext* ctx, const QList<QLine>* lines) {
     }
 }
 
-QPixmap buildGraphPixmap(QSize& size, const LinkedList* points, Metrix& metrix) {
+QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, Metrix& metrix) {
     QPixmap pixmap(size);
     pixmap.fill(QColor("#000000"));
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    if (points == nullptr || points->size == 0) { //
+    if (isEmpty(points)) {
         drawNoDataState(&painter, size);
     } else {
         GraphBounds bounds = calculateGraphBounds(points);

@@ -24,7 +24,7 @@ LinkedList* initLinkedList(size_t dataSize);
 void disposeList(LinkedList* list);
 void clearList(LinkedList* list);
 int insertSort(LinkedList* list, const void* data, int (*cmp)(const void*, const void*));
-
+int isEmpty(const LinkedList* list);
 
 #ifdef __cplusplus
 }

@@ -112,3 +112,7 @@ void disposeList(LinkedList* list) {
     free(list);
   }
 }
+
+int isEmpty(const LinkedList* list) {
+    return (list == NULL || list->size == 0);
+}

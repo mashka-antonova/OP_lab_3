@@ -53,6 +53,7 @@ int compareGraphPoints(const void* a, const void* b) {
   const GraphPoint* p2 = (const GraphPoint*)b;
   return p1->x - p2->x;
 }
+
 int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col, YearInfo years) { //упростить
   int isCorrect = 1; //
   Iterator it = begin(sourceList);
@@ -99,11 +100,12 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column, Y
   LinkedList* tempList = NULL;
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
-    if (context->graphPoints != NULL) //
+    if (!isEmpty(context->graphPoints))
       clearList(context->graphPoints);
 
     tempList = initLinkedList(sizeof(double));
-    context->graphPoints = initLinkedList(sizeof(GraphPoint)); //
+    context->graphPoints = initLinkedList(sizeof(GraphPoint));
+
     if (tempList != NULL && context->graphPoints != NULL &&
         fillSortedData(context->list, tempList, context->graphPoints, region, column, years)) {
 
