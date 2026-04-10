@@ -42,6 +42,9 @@ private:
     void updateTable(const QString& region);
     void updateGraph(const LinkedList* points);
     void resizeEvent(QResizeEvent* event);
+
+    void validateYearInput();
+    bool getRegionYearBounds(const QString& region, int& minYear, int& maxYear);
 };
 
 #endif // MAINWINDOW_H

@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->calculateMetrix, &QPushButton::clicked, this, &MainWindow::calculateMetricsClicked);
     connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &MainWindow::tableItemDoubleClicked);
     connect(ui->regionInput, &QComboBox::currentTextChanged, this, &MainWindow::updateTable);
+    connect(ui->yearFrom, &QSpinBox::editingFinished, this, &MainWindow::validateYearInput);
+    connect(ui->yearTo, &QSpinBox::editingFinished, this, &MainWindow::validateYearInput);
 
     doOperation(INITIALIZATION, &context, NULL);
 
@@ -261,4 +263,81 @@ void MainWindow::updateGraph(const LinkedList* points) {
 void MainWindow::resizeEvent(QResizeEvent* event) {
     QMainWindow::resizeEvent(event);
     updateGraph(context.graphPoints);
+}
+
+bool MainWindow::getRegionYearBounds(const QString& region, int& minYear, int& maxYear) {
+    bool found = false;
+    Iterator it = begin(context.list);
+    if (context.list != nullptr && !region.isEmpty())
+        while (hasNext(&it)) {
+            DemographicRecord* record = (DemographicRecord*)get(&it);
+            QString recRegion = QString::fromUtf8(record->region);
+
+            if (recRegion.compare(region, Qt::CaseInsensitive) == 0) {
+                if (!found) {
+                    minYear = record->year;
+                    found = true;
+                }
+                maxYear = record->year;
+            } else if (found) {
+                break;
+            }
+            next(&it);
+        }
+    return found;
+}
+
+void MainWindow::validateYearInput() {
+    QString currentRegion = ui->regionInput->currentText().trimmed();
+    if (currentRegion.isEmpty()) return;
+    int minYear = 0, maxYear = 0;
+
+    if (getRegionYearBounds(currentRegion, minYear, maxYear)) {
+        QSpinBox* senderBox = qobject_cast<QSpinBox*>(sender());
+
+        if (senderBox) {
+            int val = senderBox->value();
+
+            if (val < minYear || val > maxYear) {
+                QMessageBox msgBox(this);
+                msgBox.setWindowTitle("INVALID YEAR INPUT");
+                msgBox.setText(QString("ENTERED YEAR (%1) IS OUT OF DATA RANGE!\n\n"
+                                       "REGION: %2\n"
+                                       "AVAILABLE PERIOD: %3 - %4")
+                                   .arg(val).arg(currentRegion).arg(minYear).arg(maxYear));
+
+                msgBox.setStyleSheet(
+                    "QMessageBox {"
+                    "   background-color: #000000;"
+                    "   border: 2px solid #00FF00;"
+                    "}"
+                    "QLabel {"
+                    "   color: #00FF00;"
+                    "   font-family: 'Courier New';"
+                    "   font-size: 11pt;"
+                    "}"
+                    "QPushButton {"
+                    "   background-color: #000000;"
+                    "   color: #00FF00;"
+                    "   border: 1px solid #00FF00;"
+                    "   padding: 5px 15px;"
+                    "   min-width: 80px;"
+                    "   font-family: 'Courier New';"
+                    "   font-weight: bold;"
+                    "   text-transform: uppercase;"
+                    "}"
+                    "QPushButton:hover {"
+                    "   background-color: #00FF00;"
+                    "   color: #000000;"
+                    "}"
+                    );
+                msgBox.exec();
+
+                if (val < minYear)
+                    senderBox->setValue(minYear);
+                else if (val > maxYear)
+                    senderBox->setValue(maxYear);
+            }
+        }
+    }
 }

@@ -363,10 +363,10 @@ border-style: dashed</string>
          <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
         </property>
         <property name="minimum">
-         <number>1900</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>2036</number>
+         <number>9999</number>
         </property>
        </widget>
       </item>
@@ -406,10 +406,10 @@ border-style: dashed</string>
          <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
         </property>
         <property name="minimum">
-         <number>1900</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>2036</number>
+         <number>9999</number>
         </property>
        </widget>
       </item>

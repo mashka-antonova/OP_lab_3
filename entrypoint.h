@@ -11,13 +11,7 @@ typedef enum {
     INITIALIZATION,
     DISPOSE_CONTEXT,
 } Operation;
-/*
-typedef struct {
-    const char* str;
-    Column column;
-    YearInfo years;
-} AppParams;
-*/
+
 void doOperation(Operation operation, AppContext* context, AppParams* params);
 
 #endif // ENTRYPOINT_H
