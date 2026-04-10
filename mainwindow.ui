@@ -278,16 +278,6 @@ border-style: dashed</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="loadData">
-        <property name="styleSheet">
-         <string notr="true">font: 9pt &quot;Courier New&quot;;</string>
-        </property>
-        <property name="text">
-         <string>Load Data</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QLineEdit" name="filePath">
         <property name="readOnly">
          <bool>true</bool>

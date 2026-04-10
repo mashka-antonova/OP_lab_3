@@ -14,9 +14,9 @@ typedef enum {
     ERR_INVALID_COLUMN,
 } Status;
 
-typedef struct RowsInfo {
-    int totalRows;
-    int invalidRows;
+typedef struct {
+    int total;
+    int invalid;
 } RowsInfo;
 
 typedef struct AppContext {

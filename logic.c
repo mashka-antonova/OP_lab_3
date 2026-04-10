@@ -6,8 +6,8 @@
 void initContext(AppContext* context) {
   if (context != NULL) {
     context->list = NULL;
-    context->rowsInfo.totalRows = 0;
-    context->rowsInfo.invalidRows = 0;
+    context->rowsInfo.total = 0;
+    context->rowsInfo.invalid = 0;
     context->programmStatus = OK;
     context->metrix.min = 0;
     context->metrix.max = 0;
@@ -31,8 +31,8 @@ void runLoadDataTask(AppContext* context, const char* fileName) {
   else
     context->list = initLinkedList(sizeof(DemographicRecord));
 
-  context->rowsInfo.totalRows = 0;
-  context->rowsInfo.invalidRows = 0;
+  context->rowsInfo.total = 0;
+  context->rowsInfo.invalid = 0;
 
   if (!loadDemographyData(context, fileName))
     context->programmStatus = ERR_FILE_OPEN;
@@ -52,3 +52,4 @@ void disposeContext(AppContext* context) {
     initContext(context);
   }
 }
+

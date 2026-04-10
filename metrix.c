@@ -54,22 +54,33 @@ int compareGraphPoints(const void* a, const void* b) {
   return p1->x - p2->x;
 }
 
-int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const char* reg, Column col, YearInfo years) { //упростить
-  int isCorrect = 1; //
+int isRecordMatches(const DemographicRecord* record, const FilterCriteria* filter) {
+  int matches = (strcmp(filter->region, record->region) == 0 &&
+  record->year >= filter->years.start &&
+  record->year <= filter->years.end);
+  return matches;
+}
+
+int processAndInsertRecord(const DemographicRecord* record, const FilterCriteria* filter, LinkedList* resList, LinkedList* pointsList) {
+  int isCorrect = 0;
+  double val = getValueByColumn((DemographicRecord*)record, filter->column);
+  GraphPoint point = {(double)record->year, val};
+  if (insertSort(resList, &val, compareDoubles)) {
+    if (insertSort(pointsList, &point, compareGraphPoints))
+      isCorrect = 1;
+  }
+  return isCorrect;
+}
+
+int fillSortedData(LinkedList* sourceList, LinkedList* resList, LinkedList* pointsList, const FilterCriteria* filter) {
+  int isCorrect = 1;
   Iterator it = begin(sourceList);
-  while(hasNext(&it) && isCorrect) {
+  while (isCorrect && hasNext(&it)) {
     DemographicRecord* record = (DemographicRecord*)get(&it);
-    if (!strcmp(reg, record->region) && record->year >= years.startYear && record->year <= years.endYear) {
-        double val = getValueByColumn(record, col);
-        GraphPoint point;
-        point.x = record->year;
-        point.y = val;
-        if (!insertSort(resList, &val, compareDoubles) ||
-            !insertSort(pointsList, &point, compareGraphPoints)) {
-          isCorrect = 0;
-        }
-    }
-    next(&it);
+    if (isRecordMatches(record, filter))
+      isCorrect = processAndInsertRecord(record, filter, resList, pointsList);
+    if (isCorrect)
+      next(&it);
   }
   return isCorrect;
 }
@@ -93,9 +104,11 @@ Metrix buildMetrix(LinkedList* list) {
 Metrix calculateMetrix(AppContext* context, const char* region, Column column, YearInfo years) {
   Metrix metrix = {0};
   LinkedList* tempList = NULL;
+  FilterCriteria filter = {.region = region, .column = column, .years = years};
+
   if (context != NULL && context->list != NULL && region != NULL && checkColumn(context, column)) {
 
-    if (context->graphPoints == NULL)
+    if (isEmpty(context->graphPoints))
       context->graphPoints = initLinkedList(sizeof(GraphPoint));
     else
       clearList(context->graphPoints);
@@ -103,7 +116,7 @@ Metrix calculateMetrix(AppContext* context, const char* region, Column column, Y
     tempList = initLinkedList(sizeof(double));
 
     if (tempList != NULL && context->graphPoints != NULL &&
-        fillSortedData(context->list, tempList, context->graphPoints, region, column, years)) {
+                        fillSortedData(context->list, tempList, context->graphPoints, &filter)) {
 
       if (tempList->size > 0) {
         metrix = buildMetrix(tempList);

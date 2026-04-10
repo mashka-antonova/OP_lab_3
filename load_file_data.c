@@ -7,11 +7,11 @@ void processLines(AppContext* context, FILE* file) {
   char buffer[MAX_BUFFER_SIZE];
   while (fgets(buffer, sizeof(buffer), file)) {
     DemographicRecord record;
-    context->rowsInfo.totalRows++;
+    context->rowsInfo.total++;
     if (parseDemographyLine(buffer, &record))
       insertSort(context->list, &record, compareRecords);
     else
-      context->rowsInfo.invalidRows++;
+      context->rowsInfo.invalid++;
     }
 }
 

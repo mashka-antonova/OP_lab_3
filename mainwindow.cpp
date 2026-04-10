@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("ROBCO: DEMOGRAPHIC MODULE");
 
     connect(ui->selectFile, &QToolButton::clicked, this, &MainWindow::selectFileClicked);
-    connect(ui->loadData, &QPushButton::clicked, this, &MainWindow::loadDataClicked);
     connect(ui->calculateMetrix, &QPushButton::clicked, this, &MainWindow::calculateMetricsClicked);
     connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &MainWindow::tableItemDoubleClicked);
     connect(ui->regionInput, &QComboBox::currentTextChanged, this, &MainWindow::updateTable);
@@ -95,12 +94,13 @@ void MainWindow::selectFileClicked()
     QString initialDir = desktopPath + "/OP";
     QString fileName = QFileDialog::getOpenFileName(this, "Choose CSV file", initialDir, "CSV Files (*.csv);;All Files (*)");
 
-    if (!fileName.isEmpty())
+    if (!fileName.isEmpty()) {
         ui->filePath->setText(fileName);
-    else
+        loadDataClicked();
+    } else {
         context.programmStatus = ERR_EMPTY_DATA;
+    }
 }
-
 void MainWindow::loadDataClicked()
 {
     std::string str = ui->filePath->text().toStdString();
@@ -135,16 +135,16 @@ void MainWindow::loadDataClicked()
             ui->regionInput->blockSignals(false);
         }
 
-        int successRows = context.rowsInfo.totalRows - context.rowsInfo.invalidRows;
+        int successRows = context.rowsInfo.total - context.rowsInfo.invalid;
         QMessageBox msgBox(this);
         msgBox.setWindowTitle("TERMINAL NOTIFICATION");
         msgBox.setText(QString("FILE ANALYSIS COMPLETE:\n\n"
                                "TOTAL RECORDS: %1\n"
                                "SUCCESSFULLY READ: %2\n"
                                "ERRORS: %3")
-                           .arg(context.rowsInfo.totalRows)
+                           .arg(context.rowsInfo.total)
                            .arg(successRows)
-                           .arg(context.rowsInfo.invalidRows));
+                           .arg(context.rowsInfo.invalid));
 
         msgBox.setStyleSheet(
             "QMessageBox {"
@@ -218,13 +218,13 @@ void MainWindow::calculateMetricsClicked() {
     Column column = static_cast<Column>(ui->columnInput->currentData().toInt());
 
     YearInfo years;
-    years.startYear = ui->yearFrom->value();
-    years.endYear = ui->yearTo->value();
+    years.start = ui->yearFrom->value();
+    years.end = ui->yearTo->value();
 
-    if (years.startYear > years.endYear) {
-        std::swap(years.startYear, years.endYear);
-        ui->yearFrom->setValue(years.startYear);
-        ui->yearTo->setValue(years.endYear);
+    if (years.start > years.end) {
+        std::swap(years.start, years.end);
+        ui->yearFrom->setValue(years.start);
+        ui->yearTo->setValue(years.end);
     }
 
     if (str.empty())
@@ -254,6 +254,7 @@ void MainWindow::tableItemDoubleClicked(QTableWidgetItem *item) {
 }
 
 void MainWindow::updateGraph(const LinkedList* points) {
+    QString label = ui->columnInput->currentText();
     ui->graph->setPixmap(buildGraphPixmap(ui->graph->size(), points, context.metrix));
 }
 

@@ -87,7 +87,7 @@ void drawMetricLine(DrawContext* ctx, double value, QColor color, QString label)
     ctx->painter->drawText(textOffset, yCoord - textOffset, label);
 }
 
-void drawXAxisTicks(DrawContext* ctx) { //разобраться
+void drawXAxisTicks(DrawContext* ctx) {
     int minX = (int)ctx->bounds.min.x;
     int maxX = (int)ctx->bounds.max.x;
     int xRange = (maxX - minX > 0) ? maxX - minX : 1;
@@ -221,7 +221,7 @@ QPixmap buildGraphPixmap(const QSize& size, const LinkedList* points, Metrix& me
         ctx.painter->drawLines(lines);
         drawPoints(&ctx, &lines);
 
-        painter.restore(); //
+        painter.restore();
     }
     return pixmap;
 }
